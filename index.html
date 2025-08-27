@@ -1034,28 +1034,108 @@
             const requiredIndicator = isRequired ? ' <span class="text-red-500">*</span>' : '';
             
             let inputHtml = '';
+            let validationHtml = '';
+            
+            // Determine input type based on data item characteristics
+            const inputType = determineInputType(dataItem);
             
             if (options.length > 0) {
-                // Create dropdown for population notes
+                // Create dropdown for enumerated values
                 const optionsHtml = options.map(option => 
-                    `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`
+                    `<option value="${escapeHtml(option.value)}" title="${escapeHtml(option.label)}">${escapeHtml(option.label)}</option>`
                 ).join('');
                 
                 inputHtml = `
-                    <select class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" data-item-id="${itemId}">
+                    <select class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
+                            data-item-id="${itemId}" 
+                            data-input-type="enum"
+                            ${isRequired ? 'required' : ''}>
                         <option value="">Select an option...</option>
                         ${optionsHtml}
                     </select>
                 `;
             } else {
-                // Create text input
-                const placeholder = dataItem.example ? `e.g., ${dataItem.example}` : 'Enter value...';
-                inputHtml = `
-                    <input type="text" 
-                           class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
-                           placeholder="${escapeHtml(placeholder)}" 
-                           data-item-id="${itemId}">
+                // Create appropriate input based on data type
+                const placeholder = dataItem.example ? `e.g., ${dataItem.example}` : getPlaceholderByType(inputType);
+                
+                switch (inputType) {
+                    case 'date':
+                        inputHtml = `
+                            <input type="date" 
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
+                                   data-item-id="${itemId}"
+                                   data-input-type="date"
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                        break;
+                        
+                    case 'datetime':
+                        inputHtml = `
+                            <input type="datetime-local" 
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
+                                   data-item-id="${itemId}"
+                                   data-input-type="datetime"
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                        break;
+                        
+                    case 'number':
+                        inputHtml = `
+                            <input type="number" 
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
+                                   placeholder="${escapeHtml(placeholder)}" 
+                                   data-item-id="${itemId}"
+                                   data-input-type="number"
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                        break;
+                        
+                    case 'email':
+                        inputHtml = `
+                            <input type="email" 
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
+                                   placeholder="${escapeHtml(placeholder)}" 
+                                   data-item-id="${itemId}"
+                                   data-input-type="email"
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                        break;
+                        
+                    case 'textarea':
+                        inputHtml = `
+                            <textarea class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
+                                      rows="3" 
+                                      placeholder="${escapeHtml(placeholder)}" 
+                                      data-item-id="${itemId}"
+                                      data-input-type="textarea"
+                                      ${isRequired ? 'required' : ''}></textarea>
+                        `;
+                        break;
+                        
+                    default: // text
+                        const maxLength = getMaxLength(dataItem);
+                        inputHtml = `
+                            <input type="text" 
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
+                                   placeholder="${escapeHtml(placeholder)}" 
+                                   data-item-id="${itemId}"
+                                   data-input-type="text"
+                                   ${maxLength ? `maxlength="${maxLength}"` : ''}
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                }
+            }
+
+            // Add validation hints
+            if (dataItem.rule && dataItem.rule.length > 50) {
+                validationHtml = `
+                    <details class="mt-1">
+                        <summary class="text-xs text-blue-600 cursor-pointer hover:text-blue-800">Validation Rules</summary>
+                        <p class="text-xs text-gray-600 mt-1 p-2 bg-blue-50 rounded">${escapeHtml(dataItem.rule)}</p>
+                    </details>
                 `;
+            } else if (dataItem.rule) {
+                validationHtml = `<p class="text-xs text-gray-600 mt-1">${escapeHtml(dataItem.rule)}</p>`;
             }
 
             return `
@@ -1070,76 +1150,309 @@
                                 <span class="text-xs font-normal text-gray-600 ml-2">(${escapeHtml(dataItem.cmo)})</span>
                             </label>
                             ${inputHtml}
-                            ${dataItem.rule ? `<p class="text-xs text-gray-600 mt-1">${escapeHtml(dataItem.rule)}</p>` : ''}
+                            ${validationHtml}
+                            <div class="validation-error text-xs text-red-600 mt-1 hidden"></div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
+        function determineInputType(dataItem) {
+            const name = dataItem.name.toLowerCase();
+            const rule = (dataItem.rule || '').toLowerCase();
+            
+            // Date/DateTime detection
+            if (name.includes('date') || name.includes('time') || rule.includes('date') || rule.includes('time')) {
+                if (name.includes('time') || rule.includes('time')) {
+                    return 'datetime';
+                }
+                return 'date';
+            }
+            
+            // Number detection
+            if (name.includes('count') || name.includes('number') || name.includes('amount') || 
+                name.includes('quantity') || rule.includes('numeric') || dataItem.example && /^\d+(\.\d+)?$/.test(dataItem.example)) {
+                return 'number';
+            }
+            
+            // Email detection
+            if (name.includes('email') || name.includes('contact') && rule.includes('email')) {
+                return 'email';
+            }
+            
+            // Long text detection
+            if (rule && rule.length > 100 || name.includes('description') || name.includes('context') || name.includes('additional information')) {
+                return 'textarea';
+            }
+            
+            return 'text';
+        }
+
+        function getMaxLength(dataItem) {
+            if (dataItem.rule && dataItem.rule.includes('40')) return 40;
+            if (dataItem.rule && dataItem.rule.includes('13')) return 13;
+            if (dataItem.rule && dataItem.rule.includes('255')) return 255;
+            
+            // Extract numbers from rule text
+            const match = dataItem.rule?.match(/(\d+)\s*(character|char)/i);
+            if (match) return parseInt(match[1]);
+            
+            return null;
+        }
+
+        function getPlaceholderByType(inputType) {
+            switch (inputType) {
+                case 'date': return 'YYYY-MM-DD';
+                case 'datetime': return 'YYYY-MM-DDTHH:mm';
+                case 'number': return 'Enter number...';
+                case 'email': return 'user@example.com';
+                case 'textarea': return 'Enter detailed information...';
+                default: return 'Enter value...';
+            }
+        }
+
         function parsePopulationNotes(notes) {
             const options = [];
             
-            // Try to extract options from population notes
-            // Look for patterns like "- A Active", "- I Import", etc.
-            const matches = notes.match(/- \w+[^\n-]*/g);
+            if (!notes) return options;
+            
+            // Enhanced pattern matching for various formats:
+            // "- A Active", "- I Import", "- COS Change of Supplier", etc.
+            
+            // First try: Standard format with dash prefix
+            let matches = notes.match(/- ([A-Z0-9_]+)\s+([^-\n]+)/g);
             
             if (matches) {
                 matches.forEach(match => {
                     const cleaned = match.replace(/^- /, '').trim();
-                    const parts = cleaned.split(/\s+/);
-                    if (parts.length >= 2) {
-                        const value = parts[0];
-                        const label = parts.slice(1).join(' ');
-                        options.push({ value, label: `${value} - ${label}` });
+                    // Split on first space to separate code from description
+                    const firstSpaceIndex = cleaned.indexOf(' ');
+                    if (firstSpaceIndex > 0) {
+                        const code = cleaned.substring(0, firstSpaceIndex).trim();
+                        const description = cleaned.substring(firstSpaceIndex + 1).trim();
+                        options.push({ 
+                            value: code, 
+                            label: `${code} - ${description}` 
+                        });
                     }
                 });
+            } else {
+                // Try alternative patterns like "A = Active", "I: Import", etc.
+                matches = notes.match(/([A-Z0-9_]+)\s*[=:]\s*([^,\n]+)/g);
+                
+                if (matches) {
+                    matches.forEach(match => {
+                        const parts = match.split(/\s*[=:]\s*/);
+                        if (parts.length >= 2) {
+                            const code = parts[0].trim();
+                            const description = parts[1].trim();
+                            options.push({ 
+                                value: code, 
+                                label: `${code} - ${description}` 
+                            });
+                        }
+                    });
+                } else {
+                    // Try comma-separated format: "A Active, I Import, etc."
+                    matches = notes.match(/([A-Z0-9_]+)\s+([^,]+)/g);
+                    
+                    if (matches) {
+                        matches.forEach(match => {
+                            const parts = match.trim().split(/\s+/);
+                            if (parts.length >= 2) {
+                                const code = parts[0];
+                                const description = parts.slice(1).join(' ');
+                                options.push({ 
+                                    value: code, 
+                                    label: `${code} - ${description}` 
+                                });
+                            }
+                        });
+                    }
+                }
             }
             
-            return options;
+            // Remove duplicates and sort by code
+            const uniqueOptions = options.filter((option, index, self) => 
+                index === self.findIndex(o => o.value === option.value)
+            ).sort((a, b) => a.value.localeCompare(b.value));
+            
+            return uniqueOptions;
         }
 
         function exportFormData() {
+            // Validate required fields first
+            const validationErrors = validateForm();
+            
+            if (validationErrors.length > 0) {
+                showValidationErrors(validationErrors);
+                return;
+            }
+
+            const currentInterface = state.interfaces.find(i => i.id === state.currentInterfaceId);
+            
             const formData = {
                 interfaceId: state.currentInterfaceId,
+                interfaceName: currentInterface?.name || '',
                 timestamp: new Date().toISOString(),
-                sender: {
-                    name: DOMElements.senderName.value,
-                    contact: DOMElements.senderContact.value
+                metadata: {
+                    sender: {
+                        name: DOMElements.senderName.value.trim(),
+                        contact: DOMElements.senderContact.value.trim()
+                    },
+                    receiver: {
+                        name: DOMElements.receiverName.value.trim(),
+                        contact: DOMElements.receiverContact.value.trim()
+                    }
                 },
-                receiver: {
-                    name: DOMElements.receiverName.value,
-                    contact: DOMElements.receiverContact.value
-                },
-                data: {}
+                dataItems: {},
+                dataBlocks: {}
             };
 
-            // Collect all form inputs
+            // Collect all form inputs, ensuring only code values are saved for enums
             const inputs = DOMElements.formContent.querySelectorAll('.form-input[data-item-id]');
+            
             inputs.forEach(input => {
                 const itemId = input.dataset.itemId;
+                const inputType = input.dataset.inputType;
                 const value = input.value.trim();
+                
                 if (value) {
                     const dataItem = state.dataItemsCatalogue[itemId];
-                    formData.data[itemId] = {
+                    
+                    // For enum types, save only the code value, not the full description
+                    let savedValue = value;
+                    if (inputType === 'enum') {
+                        // Extract just the code part (before the first " - " if present)
+                        const dashIndex = value.indexOf(' - ');
+                        if (dashIndex > 0) {
+                            savedValue = value.substring(0, dashIndex).trim();
+                        }
+                    }
+                    
+                    formData.dataItems[itemId] = {
                         name: dataItem?.name || '',
-                        value: value,
-                        mandatory: dataItem?.cmo === 'M'
+                        value: savedValue,
+                        displayValue: value, // Keep full display value for reference
+                        inputType: inputType,
+                        mandatory: dataItem?.cmo === 'M',
+                        rule: dataItem?.rule || ''
                     };
                 }
             });
 
+            // Group data items by their blocks for better structure
+            if (currentInterface?.composition) {
+                currentInterface.composition.forEach(comp => {
+                    if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
+                        const block = state.dataBlocksCatalogue[comp.id];
+                        const blockData = {};
+                        
+                        block.items.forEach(itemId => {
+                            if (formData.dataItems[itemId]) {
+                                blockData[itemId] = formData.dataItems[itemId];
+                            }
+                        });
+                        
+                        if (Object.keys(blockData).length > 0) {
+                            formData.dataBlocks[comp.id] = {
+                                title: comp.titleOverride || block.title,
+                                items: blockData
+                            };
+                        }
+                    }
+                });
+            }
+
+            // Generate filename with timestamp
+            const timestamp = new Date().toISOString().slice(0, 16).replace(/[:.]/g, '-');
+            const filename = `${state.currentInterfaceId}_filled_${timestamp}.json`;
+            
             // Download the filled form data
-            const json = JSON.stringify(formData, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${state.currentInterfaceId}_filled_form.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            downloadFile(
+                JSON.stringify(formData, null, 2),
+                filename,
+                'application/json'
+            );
+            
+            // Show success message
+            showSuccessMessage(`Form data exported successfully as ${filename}`);
+        }
+
+        function validateForm() {
+            const errors = [];
+            const requiredInputs = DOMElements.formContent.querySelectorAll('.form-input[required]');
+            
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    const itemId = input.dataset.itemId;
+                    const dataItem = state.dataItemsCatalogue[itemId];
+                    errors.push({
+                        field: itemId,
+                        message: `${dataItem?.name || itemId} is required`,
+                        element: input
+                    });
+                }
+            });
+            
+            return errors;
+        }
+
+        function showValidationErrors(errors) {
+            // Clear previous errors
+            DOMElements.formContent.querySelectorAll('.validation-error').forEach(el => {
+                el.classList.add('hidden');
+                el.textContent = '';
+            });
+            
+            // Show new errors
+            errors.forEach(error => {
+                const formGroup = error.element.closest('.form-group');
+                if (formGroup) {
+                    const errorDiv = formGroup.querySelector('.validation-error');
+                    if (errorDiv) {
+                        errorDiv.textContent = error.message;
+                        errorDiv.classList.remove('hidden');
+                    }
+                    
+                    // Highlight the input
+                    error.element.classList.add('border-red-500', 'focus:ring-red-500');
+                    setTimeout(() => {
+                        error.element.classList.remove('border-red-500', 'focus:ring-red-500');
+                    }, 3000);
+                }
+            });
+            
+            // Scroll to first error
+            if (errors.length > 0) {
+                errors[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                errors[0].element.focus();
+            }
+        }
+
+        function showSuccessMessage(message) {
+            // Create and show a temporary success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-0 transition-transform';
+            successDiv.textContent = message;
+            
+            document.body.appendChild(successDiv);
+            
+            // Animate in
+            setTimeout(() => {
+                successDiv.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                successDiv.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(successDiv)) {
+                        document.body.removeChild(successDiv);
+                    }
+                }, 300);
+            }, 3000);
         }
 
         // Export Functions (keeping the others for completeness)
