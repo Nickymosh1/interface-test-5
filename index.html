@@ -75,8 +75,8 @@
                         <button id="rejectionCodesBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Rejection Codes Lookup">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </button>
-                        <button id="exportBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Export Data">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <button id="fillFormBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Fill Interface Form" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         </button>
                     </div>
                 </div>
@@ -167,6 +167,41 @@
                     <div id="rejectionCodesList" class="space-y-4 max-h-96 overflow-y-auto"></div>
                 </div>
 
+                <!-- Interface Form Builder Panel -->
+                <div id="formBuilderPanel" class="hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-[var(--eon-red)]">Interface Form Builder</h2>
+                            <p id="formInterfaceName" class="text-sm text-[var(--purple)] opacity-80 mt-1"></p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="exportFormBtn" class="px-4 py-2 bg-[var(--data-leaf)] text-white rounded-lg text-sm hover:opacity-90 transition-opacity">
+                                Export JSON
+                            </button>
+                            <button id="closeFormBuilder" class="text-[var(--purple)] hover:text-[var(--eon-red)] p-2 rounded-lg hover:bg-white/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[var(--birch)] rounded-xl">
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--purple)] mb-2">Sender Information</label>
+                                <input type="text" id="senderName" placeholder="Sender Name" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] mb-2">
+                                <input type="text" id="senderContact" placeholder="Contact Info" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--purple)] mb-2">Receiver Information</label>
+                                <input type="text" id="receiverName" placeholder="Receiver Name" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] mb-2">
+                                <input type="text" id="receiverContact" placeholder="Contact Info" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="formContent" class="space-y-6 max-h-96 overflow-y-auto"></div>
+                </div>
+
                 <!-- Welcome Message -->
                 <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full text-center py-16">
                     <div class="hero-text mb-6">
@@ -183,34 +218,6 @@
                 <!-- Interface Details -->
                 <div id="detailsContent" class="hidden"></div>
             </main>
-        </div>
-    </div>
-
-    <!-- Export Modal -->
-    <div id="exportModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-lg font-bold text-[var(--eon-red)] mb-4">Export Data</h3>
-            <div class="space-y-3">
-                <button class="export-option w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50" data-format="json">
-                    <div class="font-medium">Complete Data (JSON)</div>
-                    <div class="text-xs text-gray-600">All interfaces with full data</div>
-                </button>
-                <button class="export-option w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50" data-format="csv">
-                    <div class="font-medium">Interface List (CSV)</div>
-                    <div class="text-xs text-gray-600">Basic interface information</div>
-                </button>
-                <button class="export-option w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50" data-format="template" id="templateExport" disabled>
-                    <div class="font-medium">Current Interface Template</div>
-                    <div class="text-xs text-gray-600">Fillable template for current interface</div>
-                </button>
-                <button class="export-option w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50" data-format="filtered">
-                    <div class="font-medium">Filtered Results</div>
-                    <div class="text-xs text-gray-600">Current search/filter results</div>
-                </button>
-            </div>
-            <div class="mt-4 flex justify-end">
-                <button id="closeExportModal" class="px-4 py-2 text-sm text-[var(--purple)] hover:text-[var(--eon-red)]">Cancel</button>
-            </div>
         </div>
     </div>
 
@@ -240,9 +247,10 @@
         function cacheDOMElements() {
             const ids = ['searchInput', 'searchSuggestions', 'interfaceList', 'welcomeMessage', 'detailsContent', 
                          'advancedToggle', 'advancedFilters', 'senderFilter', 'receiverFilter', 'minDataItems', 'maxDataItems',
-                         'hasRejectionCodes', 'favoritesOnly', 'clearFilters', 'recentList', 'exportBtn',
+                         'hasRejectionCodes', 'favoritesOnly', 'clearFilters', 'recentList', 'fillFormBtn',
                          'rejectionCodesBtn', 'rejectionCodesPanel', 'closeRejectionCodes', 'rejectionCodeSearch', 
-                         'rejectionCodesList', 'exportModal', 'closeExportModal', 'templateExport'];
+                         'rejectionCodesList', 'formBuilderPanel', 'closeFormBuilder', 'formInterfaceName', 
+                         'senderName', 'senderContact', 'receiverName', 'receiverContact', 'formContent', 'exportFormBtn'];
             
             ids.forEach(id => DOMElements[id] = document.getElementById(id));
             DOMElements.filterButtons = document.querySelectorAll('.filter-btn');
@@ -331,16 +339,14 @@
 
             // Toolbar actions
             DOMElements.rejectionCodesBtn.addEventListener('click', showRejectionCodes);
-            DOMElements.exportBtn.addEventListener('click', () => DOMElements.exportModal.classList.remove('hidden'));
+            DOMElements.fillFormBtn.addEventListener('click', showFormBuilder);
 
             // Modal/panel controls
             DOMElements.closeRejectionCodes.addEventListener('click', hideRejectionCodes);
-            DOMElements.closeExportModal.addEventListener('click', () => DOMElements.exportModal.classList.add('hidden'));
+            DOMElements.closeFormBuilder.addEventListener('click', hideFormBuilder);
 
-            // Export options
-            document.querySelectorAll('.export-option').forEach(btn => {
-                btn.addEventListener('click', () => exportData(btn.dataset.format));
-            });
+            // Form builder
+            DOMElements.exportFormBtn.addEventListener('click', exportFormData);
 
             // Search suggestions click
             DOMElements.searchSuggestions.addEventListener('click', (e) => {
@@ -728,9 +734,10 @@
             if (!item) return;
 
             state.currentInterfaceId = id;
-            DOMElements.templateExport.disabled = false;
+            DOMElements.fillFormBtn.disabled = false;
             
             hideRejectionCodes();
+            hideFormBuilder();
             DOMElements.welcomeMessage.classList.add('hidden');
             DOMElements.detailsContent.classList.remove('hidden');
             DOMElements.detailsContent.classList.add('details-fade-in');
@@ -933,7 +940,209 @@
             DOMElements.rejectionCodesList.innerHTML = html;
         }
 
-        // Export Functions
+        // Form Builder Functions
+        function showFormBuilder() {
+            if (!state.currentInterfaceId) return;
+            
+            DOMElements.welcomeMessage.classList.add('hidden');
+            DOMElements.detailsContent.classList.add('hidden');
+            DOMElements.rejectionCodesPanel.classList.add('hidden');
+            DOMElements.formBuilderPanel.classList.remove('hidden');
+            
+            generateInterfaceForm(state.currentInterfaceId);
+        }
+
+        function hideFormBuilder() {
+            DOMElements.formBuilderPanel.classList.add('hidden');
+            if (DOMElements.detailsContent.classList.contains('hidden')) {
+                DOMElements.welcomeMessage.classList.remove('hidden');
+            } else {
+                DOMElements.detailsContent.classList.remove('hidden');
+            }
+        }
+
+        function generateInterfaceForm(interfaceId) {
+            const item = state.interfaces.find(i => i.id === interfaceId);
+            if (!item) return;
+
+            // Set interface info
+            DOMElements.formInterfaceName.textContent = `${item.id} - ${item.name}`;
+            DOMElements.senderName.value = item.sender || '';
+            DOMElements.receiverName.value = item.receiver || '';
+
+            // Generate form content
+            const formHtml = generateFormHTML(item);
+            DOMElements.formContent.innerHTML = formHtml;
+        }
+
+        function generateFormHTML(interfaceItem) {
+            if (!interfaceItem.composition || interfaceItem.composition.length === 0) {
+                return '<p class="text-center text-[var(--purple)] opacity-80 p-8">No data items to fill for this interface.</p>';
+            }
+
+            return interfaceItem.composition.map(comp => {
+                if (comp.type === 'header') {
+                    return `<div class="bg-[var(--birch)] p-4 rounded-xl">
+                        <h3 class="font-bold text-[var(--dark-purple)] text-lg">${escapeHtml(comp.title)}</h3>
+                    </div>`;
+                }
+
+                if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
+                    const block = state.dataBlocksCatalogue[comp.id];
+                    const blockTitle = comp.titleOverride || block.title;
+                    
+                    const itemsHtml = block.items.map(itemId => {
+                        const dataItem = state.dataItemsCatalogue[itemId];
+                        if (!dataItem) return '';
+
+                        return generateDataItemInput(itemId, dataItem);
+                    }).join('');
+
+                    return `
+                        <div class="bg-white rounded-xl p-4 border border-gray-200">
+                            <h4 class="font-bold text-[var(--eon-red)] mb-4">${escapeHtml(blockTitle)}</h4>
+                            <div class="grid gap-4">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (comp.type === 'item') {
+                    const dataItem = state.dataItemsCatalogue[comp.id];
+                    if (!dataItem) return '';
+
+                    return `
+                        <div class="bg-white rounded-xl p-4 border border-gray-200">
+                            ${generateDataItemInput(comp.id, dataItem)}
+                        </div>
+                    `;
+                }
+
+                return '';
+            }).join('');
+        }
+
+        function generateDataItemInput(itemId, dataItem) {
+            const isRequired = dataItem.cmo === 'M';
+            const hasPopulationNotes = dataItem.populationNotes && dataItem.populationNotes.trim() !== '';
+            
+            // Parse population notes to extract options
+            const options = hasPopulationNotes ? parsePopulationNotes(dataItem.populationNotes) : [];
+            
+            const labelClass = isRequired ? 'text-red-700 font-semibold' : 'text-[var(--purple)] font-medium';
+            const requiredIndicator = isRequired ? ' <span class="text-red-500">*</span>' : '';
+            
+            let inputHtml = '';
+            
+            if (options.length > 0) {
+                // Create dropdown for population notes
+                const optionsHtml = options.map(option => 
+                    `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`
+                ).join('');
+                
+                inputHtml = `
+                    <select class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" data-item-id="${itemId}">
+                        <option value="">Select an option...</option>
+                        ${optionsHtml}
+                    </select>
+                `;
+            } else {
+                // Create text input
+                const placeholder = dataItem.example ? `e.g., ${dataItem.example}` : 'Enter value...';
+                inputHtml = `
+                    <input type="text" 
+                           class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent" 
+                           placeholder="${escapeHtml(placeholder)}" 
+                           data-item-id="${itemId}">
+                `;
+            }
+
+            return `
+                <div class="form-group">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-16">
+                            <code class="text-xs font-mono font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">${escapeHtml(itemId)}</code>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm ${labelClass} mb-1">
+                                ${escapeHtml(dataItem.name)}${requiredIndicator}
+                                <span class="text-xs font-normal text-gray-600 ml-2">(${escapeHtml(dataItem.cmo)})</span>
+                            </label>
+                            ${inputHtml}
+                            ${dataItem.rule ? `<p class="text-xs text-gray-600 mt-1">${escapeHtml(dataItem.rule)}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function parsePopulationNotes(notes) {
+            const options = [];
+            
+            // Try to extract options from population notes
+            // Look for patterns like "- A Active", "- I Import", etc.
+            const matches = notes.match(/- \w+[^\n-]*/g);
+            
+            if (matches) {
+                matches.forEach(match => {
+                    const cleaned = match.replace(/^- /, '').trim();
+                    const parts = cleaned.split(/\s+/);
+                    if (parts.length >= 2) {
+                        const value = parts[0];
+                        const label = parts.slice(1).join(' ');
+                        options.push({ value, label: `${value} - ${label}` });
+                    }
+                });
+            }
+            
+            return options;
+        }
+
+        function exportFormData() {
+            const formData = {
+                interfaceId: state.currentInterfaceId,
+                timestamp: new Date().toISOString(),
+                sender: {
+                    name: DOMElements.senderName.value,
+                    contact: DOMElements.senderContact.value
+                },
+                receiver: {
+                    name: DOMElements.receiverName.value,
+                    contact: DOMElements.receiverContact.value
+                },
+                data: {}
+            };
+
+            // Collect all form inputs
+            const inputs = DOMElements.formContent.querySelectorAll('.form-input[data-item-id]');
+            inputs.forEach(input => {
+                const itemId = input.dataset.itemId;
+                const value = input.value.trim();
+                if (value) {
+                    const dataItem = state.dataItemsCatalogue[itemId];
+                    formData.data[itemId] = {
+                        name: dataItem?.name || '',
+                        value: value,
+                        mandatory: dataItem?.cmo === 'M'
+                    };
+                }
+            });
+
+            // Download the filled form data
+            const json = JSON.stringify(formData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${state.currentInterfaceId}_filled_form.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Export Functions (keeping the others for completeness)
         function exportData(format) {
             let data, filename, mimeType;
             
@@ -965,12 +1174,6 @@
                     mimeType = 'text/csv';
                     break;
                     
-                case 'template':
-                    data = generateInterfaceTemplate(state.currentInterfaceId);
-                    filename = `${state.currentInterfaceId}_template.json`;
-                    mimeType = 'application/json';
-                    break;
-                    
                 case 'filtered':
                     data = JSON.stringify({
                         filters: {
@@ -989,78 +1192,6 @@
             }
             
             downloadFile(data, filename, mimeType);
-            DOMElements.exportModal.classList.add('hidden');
-        }
-
-        function generateInterfaceTemplate(interfaceId) {
-            const item = state.interfaces.find(i => i.id === interfaceId);
-            if (!item) return JSON.stringify({}, null, 2);
-
-            // Create a fillable template structure
-            const template = {
-                interfaceId: item.id,
-                interfaceName: item.name,
-                timestamp: new Date().toISOString(),
-                sender: {
-                    name: item.sender || "",
-                    contactInfo: "",
-                    systemId: ""
-                },
-                receiver: {
-                    name: item.receiver || "",
-                    contactInfo: "",
-                    systemId: ""
-                },
-                messageContent: {
-                    transactionalInfo: {
-                        schemaVersion: "",
-                        eventCode: ""
-                    }
-                }
-            };
-
-            // Add data blocks structure
-            if (item.composition) {
-                item.composition.forEach(comp => {
-                    if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
-                        const block = state.dataBlocksCatalogue[comp.id];
-                        const blockData = {};
-                        
-                        block.items.forEach(itemId => {
-                            const dataItem = state.dataItemsCatalogue[itemId];
-                            if (dataItem) {
-                                blockData[itemId] = {
-                                    name: dataItem.name,
-                                    value: dataItem.example || "",
-                                    mandatory: dataItem.cmo === 'M',
-                                    rule: dataItem.rule,
-                                    populationNotes: dataItem.populationNotes || ""
-                                };
-                            }
-                        });
-                        
-                        template.messageContent[comp.id] = {
-                            title: block.title,
-                            data: blockData
-                        };
-                    }
-                });
-            }
-
-            // Add rejection codes if any
-            if (item.rejectionCodeIds && item.rejectionCodeIds.length > 0) {
-                template.rejectionCodes = item.rejectionCodeIds.map(codeId => {
-                    const code = state.rejectionCodesCatalogue[codeId];
-                    return {
-                        code: codeId,
-                        description: code?.description || "",
-                        reason: code?.reason || "",
-                        resolution: code?.resolution || ""
-                    };
-                });
-            }
-
-            return JSON.stringify(template, null, 2);
         }
 
         function downloadFile(data, filename, mimeType) {
