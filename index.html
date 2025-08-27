@@ -48,14 +48,8 @@
         .advanced-filter-panel { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease; }
         .advanced-filter-panel.expanded { max-height: 500px; opacity: 1; }
         
-        .comparison-panel { position: fixed; top: 0; right: -400px; width: 400px; height: 100vh; background: white; box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease; z-index: 1000; overflow-y: auto; }
-        .comparison-panel.open { right: 0; }
-        
-        .visualization-container { min-height: 400px; }
-        
-        .tooltip { position: absolute; background: rgba(0,0,0,0.8); color: white; padding: 8px 12px; border-radius: 6px; font-size: 12px; pointer-events: none; z-index: 1000; }
-        
-        .stats-card { background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7)); }
+        .rejection-code-card { transition: all 0.2s ease; }
+        .rejection-code-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .loading { animation: pulse 1.5s ease-in-out infinite; }
@@ -69,28 +63,8 @@
                 <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold hero-text mb-3">MHHS Interface Explorer</h1>
             </div>
             <p class="text-base md:text-lg text-[var(--purple)] opacity-80 max-w-2xl mx-auto leading-relaxed">
-                Enhanced with advanced search, visualizations, and data management features.
+                Enhanced with smart search, advanced filters, and rejection code lookup.
             </p>
-            
-            <!-- Stats Dashboard -->
-            <div id="statsContainer" class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                <div class="stats-card p-4 rounded-2xl shadow-lg">
-                    <div class="text-2xl font-bold text-[var(--eon-red)]" id="totalInterfaces">-</div>
-                    <div class="text-xs text-[var(--purple)] opacity-80">Total Interfaces</div>
-                </div>
-                <div class="stats-card p-4 rounded-2xl shadow-lg">
-                    <div class="text-2xl font-bold text-[var(--data-gas-off)]" id="supplierSendCount">-</div>
-                    <div class="text-xs text-[var(--purple)] opacity-80">Supplier Send</div>
-                </div>
-                <div class="stats-card p-4 rounded-2xl shadow-lg">
-                    <div class="text-2xl font-bold text-[var(--data-sun)]" id="supplierReceiveCount">-</div>
-                    <div class="text-xs text-[var(--purple)] opacity-80">Supplier Receive</div>
-                </div>
-                <div class="stats-card p-4 rounded-2xl shadow-lg">
-                    <div class="text-2xl font-bold text-[var(--data-leaf)]" id="favoriteCount">-</div>
-                    <div class="text-xs text-[var(--purple)] opacity-80">Favorites</div>
-                </div>
-            </div>
         </header>
 
         <div class="flex flex-col lg:flex-row gap-6 md:gap-8">
@@ -98,14 +72,11 @@
                 <div class="flex items-center justify-between mb-5">
                     <h2 id="filter-heading" class="text-xl font-bold text-[var(--eon-red)] flex-shrink-0">Find an Interface</h2>
                     <div class="flex gap-2">
-                        <button id="visualizeBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Visualize Relationships">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v6"/></svg>
+                        <button id="rejectionCodesBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Rejection Codes Lookup">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </button>
                         <button id="exportBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Export Data">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        </button>
-                        <button id="compareBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Compare Interfaces">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                         </button>
                     </div>
                 </div>
@@ -150,6 +121,13 @@
                                 <option value="">Any Receiver</option>
                             </select>
                         </div>
+                        <div>
+                            <label class="block text-xs font-medium text-[var(--purple)] mb-1">Data Items Count</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="minDataItems" placeholder="Min" class="w-1/2 text-xs p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                                <input type="number" id="maxDataItems" placeholder="Max" class="w-1/2 text-xs p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                            </div>
+                        </div>
                         <div class="flex items-center">
                             <input type="checkbox" id="hasRejectionCodes" class="mr-2">
                             <label for="hasRejectionCodes" class="text-xs text-[var(--purple)]">Has Rejection Codes</label>
@@ -173,15 +151,20 @@
             </aside>
 
             <main id="detailsPanel" class="lg:w-2/3 xl:w-3/4 bg-white/80 p-5 md:p-8 rounded-3xl shadow-2xl relative" role="main" aria-live="polite">
-                <!-- Visualization Panel -->
-                <div id="visualizationPanel" class="hidden">
+                <!-- Rejection Codes Panel -->
+                <div id="rejectionCodesPanel" class="hidden">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-[var(--eon-red)]">Interface Relationships</h2>
-                        <button id="closeVisualization" class="text-[var(--purple)] hover:text-[var(--eon-red)] p-2 rounded-lg hover:bg-white/50">
+                        <h2 class="text-2xl font-bold text-[var(--eon-red)]">Rejection Codes Lookup</h2>
+                        <button id="closeRejectionCodes" class="text-[var(--purple)] hover:text-[var(--eon-red)] p-2 rounded-lg hover:bg-white/50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
-                    <div id="networkVisualization" class="visualization-container border border-gray-200 rounded-2xl bg-white/50"></div>
+                    
+                    <div class="mb-6">
+                        <input type="search" id="rejectionCodeSearch" placeholder="Search rejection codes by ID, description, or keyword..." class="search-input w-full px-4 py-3 border-0 rounded-xl focus:ring-2 focus:ring-[var(--eon-red)] transition placeholder:text-[var(--purple)] placeholder:opacity-60 text-sm md:text-base">
+                    </div>
+                    
+                    <div id="rejectionCodesList" class="space-y-4 max-h-96 overflow-y-auto"></div>
                 </div>
 
                 <!-- Welcome Message -->
@@ -193,7 +176,7 @@
                     </div>
                     <h2 class="text-2xl md:text-3xl font-bold mb-3 hero-text">Enhanced Interface Explorer</h2>
                     <p class="text-base md:text-lg text-[var(--purple)] opacity-80 max-w-md leading-relaxed">
-                        Select an interface to explore, or use the visualization tools to see relationships.
+                        Select an interface to explore, or use the rejection codes lookup for quick reference.
                     </p>
                 </div>
 
@@ -203,33 +186,22 @@
         </div>
     </div>
 
-    <!-- Comparison Panel -->
-    <div id="comparisonPanel" class="comparison-panel">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-[var(--eon-red)]">Compare Interfaces</h3>
-                <button id="closeComparison" class="text-[var(--purple)] hover:text-[var(--eon-red)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-            <div id="comparisonContent">
-                <p class="text-sm text-[var(--purple)] opacity-80">Click on interfaces while holding Ctrl/Cmd to add them to comparison.</p>
-            </div>
-        </div>
-    </div>
-
     <!-- Export Modal -->
     <div id="exportModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
             <h3 class="text-lg font-bold text-[var(--eon-red)] mb-4">Export Data</h3>
             <div class="space-y-3">
                 <button class="export-option w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50" data-format="json">
-                    <div class="font-medium">JSON Format</div>
-                    <div class="text-xs text-gray-600">Complete data with all properties</div>
+                    <div class="font-medium">Complete Data (JSON)</div>
+                    <div class="text-xs text-gray-600">All interfaces with full data</div>
                 </button>
                 <button class="export-option w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50" data-format="csv">
-                    <div class="font-medium">CSV Format</div>
+                    <div class="font-medium">Interface List (CSV)</div>
                     <div class="text-xs text-gray-600">Basic interface information</div>
+                </button>
+                <button class="export-option w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50" data-format="template" id="templateExport" disabled>
+                    <div class="font-medium">Current Interface Template</div>
+                    <div class="text-xs text-gray-600">Fillable template for current interface</div>
                 </button>
                 <button class="export-option w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50" data-format="filtered">
                     <div class="font-medium">Filtered Results</div>
@@ -247,11 +219,10 @@
         const state = {
             interfaces: [], dataItemsCatalogue: {}, dataBlocksCatalogue: {}, rejectionCodesCatalogue: {},
             filteredInterfaces: [], currentFilter: 'all', currentSearchTerm: '', advancedFilters: {},
-            favorites: new Set(), recentlyViewed: [], comparisonList: [], searchCache: new Map(),
+            favorites: new Set(), recentlyViewed: [], searchCache: new Map(), currentInterfaceId: null
         };
 
         const DOMElements = {};
-        let searchSuggestionsCache = [];
 
         document.addEventListener('DOMContentLoaded', initApp);
 
@@ -262,17 +233,16 @@
             if (!success) return;
             setupEventListeners();
             setupAdvancedFilters();
-            updateStats();
             document.querySelector('.filter-btn[data-filter="all"]').classList.add('active-filter');
             filterAndRender();
         }
 
         function cacheDOMElements() {
             const ids = ['searchInput', 'searchSuggestions', 'interfaceList', 'welcomeMessage', 'detailsContent', 
-                         'advancedToggle', 'advancedFilters', 'senderFilter', 'receiverFilter', 'hasRejectionCodes', 
-                         'favoritesOnly', 'clearFilters', 'recentList', 'visualizeBtn', 'exportBtn', 'compareBtn',
-                         'visualizationPanel', 'networkVisualization', 'closeVisualization', 'comparisonPanel',
-                         'closeComparison', 'comparisonContent', 'exportModal', 'closeExportModal'];
+                         'advancedToggle', 'advancedFilters', 'senderFilter', 'receiverFilter', 'minDataItems', 'maxDataItems',
+                         'hasRejectionCodes', 'favoritesOnly', 'clearFilters', 'recentList', 'exportBtn',
+                         'rejectionCodesBtn', 'rejectionCodesPanel', 'closeRejectionCodes', 'rejectionCodeSearch', 
+                         'rejectionCodesList', 'exportModal', 'closeExportModal', 'templateExport'];
             
             ids.forEach(id => DOMElements[id] = document.getElementById(id));
             DOMElements.filterButtons = document.querySelectorAll('.filter-btn');
@@ -344,12 +314,13 @@
 
             // Advanced filters
             DOMElements.advancedToggle.addEventListener('click', toggleAdvancedFilters);
-            ['senderFilter', 'receiverFilter', 'hasRejectionCodes', 'favoritesOnly'].forEach(id => {
+            ['senderFilter', 'receiverFilter', 'minDataItems', 'maxDataItems', 'hasRejectionCodes', 'favoritesOnly'].forEach(id => {
                 DOMElements[id].addEventListener('change', handleAdvancedFilterChange);
+                DOMElements[id].addEventListener('input', handleAdvancedFilterChange);
             });
             DOMElements.clearFilters.addEventListener('click', clearAllFilters);
 
-            // Interface selection with comparison support
+            // Interface selection
             DOMElements.interfaceList.addEventListener('click', handleInterfaceClick);
             DOMElements.interfaceList.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -359,13 +330,11 @@
             });
 
             // Toolbar actions
-            DOMElements.visualizeBtn.addEventListener('click', showVisualization);
+            DOMElements.rejectionCodesBtn.addEventListener('click', showRejectionCodes);
             DOMElements.exportBtn.addEventListener('click', () => DOMElements.exportModal.classList.remove('hidden'));
-            DOMElements.compareBtn.addEventListener('click', toggleComparisonPanel);
 
             // Modal/panel controls
-            DOMElements.closeVisualization.addEventListener('click', hideVisualization);
-            DOMElements.closeComparison.addEventListener('click', toggleComparisonPanel);
+            DOMElements.closeRejectionCodes.addEventListener('click', hideRejectionCodes);
             DOMElements.closeExportModal.addEventListener('click', () => DOMElements.exportModal.classList.add('hidden'));
 
             // Export options
@@ -381,6 +350,14 @@
                     DOMElements.searchSuggestions.classList.add('hidden');
                     filterAndRender();
                 }
+            });
+
+            // Rejection code search
+            DOMElements.rejectionCodeSearch.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    filterRejectionCodes(e.target.value);
+                }, 200);
             });
         }
 
@@ -402,20 +379,6 @@
                 option.textContent = receiver;
                 DOMElements.receiverFilter.appendChild(option);
             });
-        }
-
-        function updateStats() {
-            const stats = {
-                total: state.interfaces.length,
-                send: state.interfaces.filter(i => i.supplier_type === 'supplier_send' || i.supplier_type === 'supplier_both').length,
-                receive: state.interfaces.filter(i => i.supplier_type === 'supplier_receive' || i.supplier_type === 'supplier_both').length,
-                favorites: state.favorites.size
-            };
-
-            document.getElementById('totalInterfaces').textContent = stats.total;
-            document.getElementById('supplierSendCount').textContent = stats.send;
-            document.getElementById('supplierReceiveCount').textContent = stats.receive;
-            document.getElementById('favoriteCount').textContent = stats.favorites;
         }
 
         // Fuzzy search implementation
@@ -480,11 +443,9 @@
             const queryLower = query.toLowerCase();
 
             state.interfaces.forEach(item => {
-                // Interface names and IDs
                 if (item.name.toLowerCase().includes(queryLower)) suggestions.add(item.name);
                 if (item.id.toLowerCase().includes(queryLower)) suggestions.add(item.id);
                 
-                // Data items
                 if (item.composition) {
                     item.composition.forEach(comp => {
                         if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
@@ -519,6 +480,8 @@
             state.advancedFilters = {
                 sender: DOMElements.senderFilter.value,
                 receiver: DOMElements.receiverFilter.value,
+                minDataItems: parseInt(DOMElements.minDataItems.value) || 0,
+                maxDataItems: parseInt(DOMElements.maxDataItems.value) || Infinity,
                 hasRejectionCodes: DOMElements.hasRejectionCodes.checked,
                 favoritesOnly: DOMElements.favoritesOnly.checked
             };
@@ -528,6 +491,8 @@
         function clearAllFilters() {
             DOMElements.senderFilter.value = '';
             DOMElements.receiverFilter.value = '';
+            DOMElements.minDataItems.value = '';
+            DOMElements.maxDataItems.value = '';
             DOMElements.hasRejectionCodes.checked = false;
             DOMElements.favoritesOnly.checked = false;
             DOMElements.searchInput.value = '';
@@ -553,12 +518,6 @@
             
             const id = element.dataset.id;
             
-            // Handle comparison mode (Ctrl/Cmd + click)
-            if (e.ctrlKey || e.metaKey) {
-                toggleComparison(id);
-                return;
-            }
-            
             // Handle favorites (double-click)
             if (e.detail === 2) {
                 toggleFavorite(id);
@@ -577,18 +536,7 @@
                 state.favorites.add(id);
             }
             saveUserData();
-            updateStats();
             renderInterfaceList();
-        }
-
-        function toggleComparison(id) {
-            const index = state.comparisonList.indexOf(id);
-            if (index > -1) {
-                state.comparisonList.splice(index, 1);
-            } else {
-                state.comparisonList.push(id);
-            }
-            updateComparisonPanel();
         }
 
         function addToRecentlyViewed(id) {
@@ -641,6 +589,10 @@
                     if (state.advancedFilters.receiver && !item.receiver?.includes(state.advancedFilters.receiver)) return false;
                     if (state.advancedFilters.hasRejectionCodes && (!item.rejectionCodeIds || item.rejectionCodeIds.length === 0)) return false;
                     if (state.advancedFilters.favoritesOnly && !state.favorites.has(item.id)) return false;
+                    
+                    // Data items count filter
+                    const dataItemsCount = getDataItemsCount(item);
+                    if (dataItemsCount < state.advancedFilters.minDataItems || dataItemsCount > state.advancedFilters.maxDataItems) return false;
 
                     // Search
                     if (searchTerms.length === 0) return true;
@@ -652,10 +604,8 @@
                     });
                 });
 
-                // Cache the result
                 state.searchCache.set(cacheKey, state.filteredInterfaces);
                 
-                // Limit cache size
                 if (state.searchCache.size > 50) {
                     const firstKey = state.searchCache.keys().next().value;
                     state.searchCache.delete(firstKey);
@@ -663,6 +613,19 @@
             }
 
             renderInterfaceList();
+        }
+
+        function getDataItemsCount(interfaceItem) {
+            if (!interfaceItem.composition) return 0;
+            let count = 0;
+            interfaceItem.composition.forEach(comp => {
+                if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
+                    count += state.dataBlocksCatalogue[comp.id].items.length;
+                } else if (comp.type === 'item') {
+                    count += 1;
+                }
+            });
+            return count;
         }
 
         function buildSearchableContent(interfaceItem) {
@@ -721,9 +684,8 @@
             sortedInterfaces.forEach(item => {
                 const element = document.createElement('div');
                 const isFavorite = state.favorites.has(item.id);
-                const isInComparison = state.comparisonList.includes(item.id);
                 
-                element.className = `interface-card p-3 md:p-4 mb-2 bg-[var(--white)] rounded-xl cursor-pointer shadow-md ${typeClasses[item.supplier_type]} ${isFavorite ? 'favorite' : ''} ${isInComparison ? 'ring-2 ring-[var(--eon-red)]' : ''}`;
+                element.className = `interface-card p-3 md:p-4 mb-2 bg-[var(--white)] rounded-xl cursor-pointer shadow-md ${typeClasses[item.supplier_type]} ${isFavorite ? 'favorite' : ''}`;
                 element.dataset.id = item.id;
                 element.setAttribute('role', 'button');
                 element.setAttribute('tabindex', '0');
@@ -765,7 +727,10 @@
             const item = state.interfaces.find(i => i.id === id);
             if (!item) return;
 
-            hideVisualization();
+            state.currentInterfaceId = id;
+            DOMElements.templateExport.disabled = false;
+            
+            hideRejectionCodes();
             DOMElements.welcomeMessage.classList.add('hidden');
             DOMElements.detailsContent.classList.remove('hidden');
             DOMElements.detailsContent.classList.add('details-fade-in');
@@ -793,12 +758,7 @@
                         </div>
                         <p class="text-base lg:text-lg text-[var(--purple)] opacity-90 font-medium">${escapeHtml(item.id)}</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold px-4 py-2 rounded-full shadow-md ${typeInfo[item.supplier_type].classes} whitespace-nowrap">${escapeHtml(typeInfo[item.supplier_type].label)}</span>
-                        <button onclick="toggleComparison('${id}')" class="p-2 rounded-lg hover:bg-white/50 transition-colors ${state.comparisonList.includes(id) ? 'text-[var(--eon-red)]' : 'text-[var(--purple)]'}" title="Add to comparison">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                        </button>
-                    </div>
+                    <span class="text-xs font-semibold px-4 py-2 rounded-full shadow-md ${typeInfo[item.supplier_type].classes} whitespace-nowrap">${escapeHtml(typeInfo[item.supplier_type].label)}</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
                     <div class="bg-white/50 p-4 sm:p-5 rounded-2xl shadow-lg border border-gray-100">
@@ -908,16 +868,16 @@
                 </div>`;
         }
 
-        // Visualization Functions
-        function showVisualization() {
+        // Rejection Codes Functions
+        function showRejectionCodes() {
             DOMElements.welcomeMessage.classList.add('hidden');
             DOMElements.detailsContent.classList.add('hidden');
-            DOMElements.visualizationPanel.classList.remove('hidden');
-            renderNetworkVisualization();
+            DOMElements.rejectionCodesPanel.classList.remove('hidden');
+            renderAllRejectionCodes();
         }
 
-        function hideVisualization() {
-            DOMElements.visualizationPanel.classList.add('hidden');
+        function hideRejectionCodes() {
+            DOMElements.rejectionCodesPanel.classList.add('hidden');
             if (DOMElements.detailsContent.classList.contains('hidden')) {
                 DOMElements.welcomeMessage.classList.remove('hidden');
             } else {
@@ -925,88 +885,52 @@
             }
         }
 
-        function renderNetworkVisualization() {
-            const container = DOMElements.networkVisualization;
-            container.innerHTML = '<div class="loading text-center py-20">Loading visualization...</div>';
-            
-            setTimeout(() => {
-                const svg = createNetworkSVG();
-                container.innerHTML = '';
-                container.appendChild(svg);
-            }, 500);
+        function renderAllRejectionCodes() {
+            const codes = Object.entries(state.rejectionCodesCatalogue);
+            renderRejectionCodesList(codes);
         }
 
-        function createNetworkSVG() {
-            const width = 800;
-            const height = 400;
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-            svg.setAttribute('class', 'w-full h-full');
+        function filterRejectionCodes(searchTerm) {
+            if (!searchTerm.trim()) {
+                renderAllRejectionCodes();
+                return;
+            }
 
-            // Create nodes from unique senders/receivers
-            const entities = new Set();
-            state.interfaces.forEach(item => {
-                if (item.sender) entities.add(item.sender);
-                if (item.receiver) entities.add(item.receiver);
+            const filteredCodes = Object.entries(state.rejectionCodesCatalogue).filter(([codeId, code]) => {
+                const searchable = `${codeId} ${code.description} ${code.reason || ''} ${code.resolution || ''}`.toLowerCase();
+                return searchable.includes(searchTerm.toLowerCase());
             });
 
-            const nodes = Array.from(entities).map((name, i) => ({
-                id: name,
-                x: (i % 6) * 130 + 65,
-                y: Math.floor(i / 6) * 80 + 40,
-                connections: state.interfaces.filter(item => item.sender === name || item.receiver === name).length
-            }));
+            renderRejectionCodesList(filteredCodes);
+        }
 
-            // Create links
-            const links = state.interfaces.map(item => ({
-                source: nodes.find(n => n.id === item.sender),
-                target: nodes.find(n => n.id === item.receiver),
-                interface: item
-            })).filter(link => link.source && link.target);
+        function renderRejectionCodesList(codes) {
+            if (codes.length === 0) {
+                DOMElements.rejectionCodesList.innerHTML = `
+                    <div class="text-center text-[var(--purple)] opacity-80 p-8">
+                        <p class="text-base font-medium">No rejection codes found</p>
+                        <p class="text-sm opacity-70">Try a different search term</p>
+                    </div>
+                `;
+                return;
+            }
 
-            // Draw links
-            links.forEach(link => {
-                if (link.source && link.target) {
-                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                    line.setAttribute('x1', link.source.x);
-                    line.setAttribute('y1', link.source.y);
-                    line.setAttribute('x2', link.target.x);
-                    line.setAttribute('y2', link.target.y);
-                    line.setAttribute('stroke', 'var(--purple)');
-                    line.setAttribute('stroke-width', '2');
-                    line.setAttribute('opacity', '0.6');
-                    line.classList.add('hover:opacity-100', 'transition-opacity', 'cursor-pointer');
-                    
-                    line.addEventListener('click', () => renderInterfaceDetails(link.interface.id));
-                    svg.appendChild(line);
-                }
-            });
+            const html = codes.map(([codeId, code]) => `
+                <div class="rejection-code-card p-4 bg-white rounded-2xl shadow-lg border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0">
+                            <span class="inline-block px-3 py-1 bg-red-100 text-red-800 font-mono font-bold text-sm rounded-lg">${escapeHtml(codeId)}</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-[var(--dark-purple)] mb-2">${escapeHtml(code.description)}</h3>
+                            ${code.reason ? `<p class="text-sm text-gray-700 mb-2"><span class="font-medium text-red-700">Reason:</span> ${escapeHtml(code.reason)}</p>` : ''}
+                            ${code.resolution ? `<p class="text-sm text-gray-700"><span class="font-medium text-green-700">Resolution:</span> ${escapeHtml(code.resolution)}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
 
-            // Draw nodes
-            nodes.forEach(node => {
-                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
-
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('r', Math.max(15, Math.min(30, node.connections * 3)));
-                circle.setAttribute('fill', 'var(--eon-red)');
-                circle.setAttribute('opacity', '0.8');
-                circle.classList.add('hover:opacity-100', 'transition-opacity', 'cursor-pointer');
-
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.textContent = node.id.length > 15 ? node.id.substring(0, 12) + '...' : node.id;
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('y', '40');
-                text.setAttribute('font-size', '10');
-                text.setAttribute('fill', 'var(--dark-purple)');
-                text.classList.add('pointer-events-none');
-
-                g.appendChild(circle);
-                g.appendChild(text);
-                svg.appendChild(g);
-            });
-
-            return svg;
+            DOMElements.rejectionCodesList.innerHTML = html;
         }
 
         // Export Functions
@@ -1041,6 +965,12 @@
                     mimeType = 'text/csv';
                     break;
                     
+                case 'template':
+                    data = generateInterfaceTemplate(state.currentInterfaceId);
+                    filename = `${state.currentInterfaceId}_template.json`;
+                    mimeType = 'application/json';
+                    break;
+                    
                 case 'filtered':
                     data = JSON.stringify({
                         filters: {
@@ -1062,6 +992,77 @@
             DOMElements.exportModal.classList.add('hidden');
         }
 
+        function generateInterfaceTemplate(interfaceId) {
+            const item = state.interfaces.find(i => i.id === interfaceId);
+            if (!item) return JSON.stringify({}, null, 2);
+
+            // Create a fillable template structure
+            const template = {
+                interfaceId: item.id,
+                interfaceName: item.name,
+                timestamp: new Date().toISOString(),
+                sender: {
+                    name: item.sender || "",
+                    contactInfo: "",
+                    systemId: ""
+                },
+                receiver: {
+                    name: item.receiver || "",
+                    contactInfo: "",
+                    systemId: ""
+                },
+                messageContent: {
+                    transactionalInfo: {
+                        schemaVersion: "",
+                        eventCode: ""
+                    }
+                }
+            };
+
+            // Add data blocks structure
+            if (item.composition) {
+                item.composition.forEach(comp => {
+                    if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
+                        const block = state.dataBlocksCatalogue[comp.id];
+                        const blockData = {};
+                        
+                        block.items.forEach(itemId => {
+                            const dataItem = state.dataItemsCatalogue[itemId];
+                            if (dataItem) {
+                                blockData[itemId] = {
+                                    name: dataItem.name,
+                                    value: dataItem.example || "",
+                                    mandatory: dataItem.cmo === 'M',
+                                    rule: dataItem.rule,
+                                    populationNotes: dataItem.populationNotes || ""
+                                };
+                            }
+                        });
+                        
+                        template.messageContent[comp.id] = {
+                            title: block.title,
+                            data: blockData
+                        };
+                    }
+                });
+            }
+
+            // Add rejection codes if any
+            if (item.rejectionCodeIds && item.rejectionCodeIds.length > 0) {
+                template.rejectionCodes = item.rejectionCodeIds.map(codeId => {
+                    const code = state.rejectionCodesCatalogue[codeId];
+                    return {
+                        code: codeId,
+                        description: code?.description || "",
+                        reason: code?.reason || "",
+                        resolution: code?.resolution || ""
+                    };
+                });
+            }
+
+            return JSON.stringify(template, null, 2);
+        }
+
         function downloadFile(data, filename, mimeType) {
             const blob = new Blob([data], { type: mimeType });
             const url = URL.createObjectURL(blob);
@@ -1074,75 +1075,6 @@
             URL.revokeObjectURL(url);
         }
 
-        // Comparison Functions
-        function toggleComparisonPanel() {
-            const panel = DOMElements.comparisonPanel;
-            panel.classList.toggle('open');
-            updateComparisonPanel();
-        }
-
-        function updateComparisonPanel() {
-            if (state.comparisonList.length === 0) {
-                DOMElements.comparisonContent.innerHTML = `
-                    <p class="text-sm text-[var(--purple)] opacity-80">
-                        Click on interfaces while holding Ctrl/Cmd to add them to comparison.
-                    </p>
-                `;
-                return;
-            }
-
-            const comparisonHtml = state.comparisonList.map(id => {
-                const item = state.interfaces.find(i => i.id === id);
-                if (!item) return '';
-                
-                return `
-                    <div class="p-3 border border-gray-200 rounded-lg mb-3 bg-gray-50">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-bold text-sm text-[var(--dark-purple)]">${escapeHtml(item.id)}</h4>
-                            <button onclick="toggleComparison('${id}')" class="text-red-500 hover:text-red-700 text-xs">Remove</button>
-                        </div>
-                        <p class="text-xs text-[var(--purple)] opacity-90 mb-2">${escapeHtml(item.name)}</p>
-                        <div class="text-xs space-y-1">
-                            <div><span class="font-medium">From:</span> ${escapeHtml(item.sender || 'N/A')}</div>
-                            <div><span class="font-medium">To:</span> ${escapeHtml(item.receiver || 'N/A')}</div>
-                            <div><span class="font-medium">Type:</span> ${escapeHtml(item.supplier_type || 'N/A')}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            DOMElements.comparisonContent.innerHTML = `
-                <div class="mb-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-medium">${state.comparisonList.length} interfaces selected</span>
-                        <button onclick="clearComparison()" class="text-xs text-red-500 hover:text-red-700">Clear All</button>
-                    </div>
-                    ${comparisonHtml}
-                </div>
-                <button onclick="exportComparison()" class="w-full bg-[var(--eon-red)] text-white py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
-                    Export Comparison
-                </button>
-            `;
-        }
-
-        function clearComparison() {
-            state.comparisonList = [];
-            updateComparisonPanel();
-            renderInterfaceList();
-        }
-
-        function exportComparison() {
-            const comparisonData = state.comparisonList.map(id => 
-                state.interfaces.find(i => i.id === id)
-            ).filter(Boolean);
-            
-            downloadFile(
-                JSON.stringify(comparisonData, null, 2),
-                'mhhs_interface_comparison.json',
-                'application/json'
-            );
-        }
-
         // Utility Functions
         function escapeHtml(text) {
             if (text === null || typeof text === 'undefined') return '';
@@ -1152,9 +1084,6 @@
 
         // Global functions for HTML onclick handlers
         window.toggleFavorite = toggleFavorite;
-        window.toggleComparison = toggleComparison;
-        window.clearComparison = clearComparison;
-        window.exportComparison = exportComparison;
     </script>
 </body>
 </html>
