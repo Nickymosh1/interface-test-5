@@ -90,8 +90,8 @@
     "DI-112": { "name": "Green Deal Effective To Date", "cmo": "O", "rule": "The date to which a Green Deal agreement is considered to be in place." },
     "DI-120": { "name": "Additional Information", "cmo": "O", "rule": "A free format character string for providing additional details." },
     "DI-121": { "name": "Outgoing Supplier Effective To Date", "cmo": "M", "rule": "The last inclusive settlement date after which a Supplier's registration to a metering system ceases to be valid.", "example": "2020-02-08T09:30:00+01:00" },
-    "DI-122": { "name": "Profile Class", "cmo": "C", "rule": "A legacy classification, maintined by Suppliers, retained soley to assist with the undertsading of allocation of gross consumption to individual Settlement Periods.", "example": "01" },
-    "DI-123": { "name": "SSC", "cmo": "C", "rule": "A legacy classification, maintined by Suppliers, retained soley to assist with the undertsading of allocation of gross consumption to individual Settlement Periods.", "example": "0393" },
+    "DI-122": { "name": "Profile Class", "cmo": "C", "rule": "A legacy classification, maintined by Suppliers, retained soley to assist with the undertsanding of allocation of gross consumption to individual Settlement Periods.", "example": "01" },
+    "DI-123": { "name": "SSC", "cmo": "C", "rule": "A legacy classification, maintined by Suppliers, retained soley to assist with the undertsanding of allocation of gross consumption to individual Settlement Periods.", "example": "0393" },
     "DI-124": { "name": "Profile Class Effective From Date", "cmo": "C", "rule": "The Date from which the current Profile Class became Effective", "example": "2020-02-08T09:30:00+01:00" },
     "DI-125": { "name": "SSC Effective From Date", "cmo": "C", "rule": "The Date from which the current Profile Class became Effective", "example": "2020-02-08T09:30:00+01:00" },
     "DI-126": { "name": "Traditional / Fall Back Read Frequency", "cmo": "O", "rule": "Supplier requested Traditional / Fall Back Meter Reading Frequency", "populationNotes": "- F Fortnightly, - W Weekly, - M Monthly, - Q Quarterly, - S Six Monthly, - A Annually", "example": "M" },
@@ -449,7 +449,7 @@
     "REG1020": {
       "description": "Event cannot take place in the future",
       "reason": "",
-      "resolution": "The effective from date for this event cannot be set for a future date. Please check the date and resubmit."
+      "resolution": "The effective from date for this event cannot be set for a future date. Please adjust the date and resubmit."
     },
     "REG1021": {
       "description": "Requesting Supplier is not the Current Supplier",
@@ -684,3 +684,1627 @@
     "REG1073": {
       "description": "CDC Already Exists for the Period Requested",
       "reason": "",
+      "resolution": "To resolve this, ensure that cdc start date [di-843] > [reg.cdc_effective_to_date]. Please check your data and resubmit."
+    },
+    "REG1074": {
+      "description": "CDC End Date cannot be prior to Start Date",
+      "reason": "",
+      "resolution": "To resolve this, ensure that cdc effective to date [di-146] > cdc effective from date [di-843]. Please check your data and resubmit."
+    },
+    "REG1075": {
+      "description": "Proposed Metering Service ID does not exist in the ISD Catalogue",
+      "reason": "The DIP ID for the proposed Metering Service is not a valid ID listed in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the Metering Service DIP ID and ensure it is a valid ID from the ISD catalogue before resubmitting."
+    },
+    "REG1076": {
+      "description": "Proposed Data Service ID does not exist in the ISD Catalogue",
+      "reason": "The DIP ID for the proposed Data Service is not a valid ID listed in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the Data Service DIP ID and ensure it is a valid ID from the ISD catalogue before resubmitting."
+    },
+    "REG1077": {
+      "description": "Proposed MDR ID does not exist in the ISD Catalogue",
+      "reason": "The DIP ID for the proposed Meter Data Retriever (MDR) is not a valid ID listed in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the MDR DIP ID and ensure it is a valid ID from the ISD catalogue before resubmitting."
+    },
+    "REG1078": {
+      "description": "Supplier ID does not exist in the ISD Catalogue",
+      "reason": "The Supplier ID provided in the message is not a valid ID listed in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the Supplier ID and ensure it is a valid ID from the ISD catalogue before resubmitting."
+    },
+    "REG1079": {
+      "description": "Distributor ID does not exist in the ISD Catalogue",
+      "reason": "The Distributor ID provided in the message is not a valid ID listed in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the Distributor ID and ensure it is a valid ID from the ISD catalogue before resubmitting."
+    },
+    "REG1080": {
+      "description": "Nominated MDR not a valid MDR for this Data Service",
+      "reason": "The MDR nominated by the Data Service is not a valid MDR within that Data Service's portfolio. Each Data Service can only nominate MDRs that are compatible and supported by them.",
+      "resolution": "Verify that the nominated MDR is one that is supported by the specified Data Service. Check the ISD or the Data Service's documentation for a list of compatible MDRs."
+    },
+    "REG1081": {
+      "description": "Assigned MDR not a valid MDR for this Data Service",
+      "reason": "The MDR assigned by the DCC is not a valid MDR within the Data Service's portfolio.",
+      "resolution": "Verify the assigned MDR is supported by the Data Service."
+    },
+    "REG1082": {
+      "description": "The MDR End Date must not be in the future",
+      "reason": "MDR appointments can only be ended on the current date or a date in the past. Future-dated terminations are not allowed.",
+      "resolution": "Adjust the MDR End Date to be the current date or a date that has already passed. Resubmit the request."
+    },
+    "REG1083": {
+      "description": "MDR End Date must be later than the MDR Effective From Date",
+      "reason": "The end date for the MDR appointment cannot be on or before its start date. The MDR must be active for at least one day.",
+      "resolution": "Ensure the MDR End Date is after the MDR Effective From Date. Correct the dates and resubmit the request."
+    },
+    "REG1084": {
+      "description": "The Nominated MDR is not currently appointed to the MPAN",
+      "reason": "The supplier has nominated an MDR for de-appointment that is not the one currently appointed to the MPAN.",
+      "resolution": "Ensure the nominated MDR for de-appointment is the one currently active on the MPAN. Verify the current MDR's ID before resubmitting."
+    },
+    "REG1085": {
+      "description": "The Nominated MDR is not the same as the one recorded by the DCC",
+      "reason": "The MDR nominated by the SDS is not the same as the one currently recorded as appointed in the DCC.",
+      "resolution": "Check the current MDR assigned to the MPAN in the DCC system and ensure the nominated MDR matches before resubmitting."
+    },
+    "REG1086": {
+      "description": "The Nominated MDR Effective From Date is not within the Data Service's Appointment Period",
+      "reason": "The proposed effective date for the MDR appointment falls outside of the time period that the Data Service is appointed to the MPAN.",
+      "resolution": "Correct the MDR Effective From Date to fall within the Data Service's appointment period."
+    },
+    "REG1087": {
+      "description": "The MDR Effective From Date is not Contiguous",
+      "reason": "The proposed MDR Effective From Date is not immediately following the previous MDR's End Date. There is a gap or an overlap in the appointment history.",
+      "resolution": "Adjust the MDR Effective From Date to be contiguous with the previous MDR's End Date."
+    },
+    "REG1088": {
+      "description": "The MDR Effective From Date is earlier than the MDR Effective From Date on the previous MDR",
+      "reason": "The proposed MDR Effective From Date is chronologically before the effective date of the previous MDR appointment, which would create an invalid timeline.",
+      "resolution": "Ensure the MDR Effective From Date is after the previous MDR's Effective From Date."
+    },
+    "REG1089": {
+      "description": "Metering Service DIP is not valid",
+      "reason": "The Metering Service DIP ID provided is not found in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the Metering Service DIP ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1090": {
+      "description": "Data Service DIP is not valid",
+      "reason": "The Data Service DIP ID provided is not found in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the Data Service DIP ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1091": {
+      "description": "Supplier ID is not valid",
+      "reason": "The Supplier ID provided is not found in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the Supplier ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1092": {
+      "description": "Distributor ID is not valid",
+      "reason": "The Distributor ID provided is not found in the Industry Standing Data (ISD) catalogue.",
+      "resolution": "Verify the Distributor ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1093": {
+      "description": "Supplier Nominated MDR is not valid",
+      "reason": "The MDR nominated by the supplier is not a valid MDR in the ISD catalogue.",
+      "resolution": "Verify the nominated MDR ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1094": {
+      "description": "SDS Nominated MDR is not valid",
+      "reason": "The MDR nominated by the SDS is not a valid MDR in the ISD catalogue.",
+      "resolution": "Verify the nominated MDR ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1095": {
+      "description": "Assigned MDR is not valid",
+      "reason": "The assigned MDR is not a valid MDR in the ISD catalogue.",
+      "resolution": "Verify the assigned MDR ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1096": {
+      "description": "The proposed MDR is already the appointed MDR for the MPAN",
+      "reason": "A request was made to appoint an MDR that is already the current MDR for the MPAN. This is a redundant and invalid action.",
+      "resolution": "Check the currently appointed MDR for the MPAN and ensure that the proposed MDR is different before making an appointment request."
+    },
+    "REG1097": {
+      "description": "De-appointed MDR cannot be the same as the Proposed MDR",
+      "reason": "The MDR being de-appointed and the proposed new MDR are the same entity. An MDR cannot de-appoint itself to re-appoint itself in a single transaction.",
+      "resolution": "Ensure that the de-appointed MDR and the proposed MDR are different entities."
+    },
+    "REG1098": {
+      "description": "The Metering Service and Data Service are not compatible",
+      "reason": "The combination of the proposed Metering Service and Data Service is not a valid or supported combination according to the ISD catalogue.",
+      "resolution": "Check the ISD catalogue for compatible combinations of Metering and Data Services for the specified MPAN. Adjust one or both of the service provider IDs to a compatible pair."
+    },
+    "REG1099": {
+      "description": "Supplier cannot de-appoint a service provider that they did not appoint",
+      "reason": "The supplier sending the request is not the supplier who initially appointed the service provider being de-appointed.",
+      "resolution": "De-appointments can only be requested by the supplier who holds the current appointment. Verify that the correct supplier is making the request."
+    },
+    "REG1100": {
+      "description": "The MPAN is not currently live on the DCC network",
+      "reason": "The MPAN for which the request is being made has not been activated or is not currently active on the DCC network.",
+      "resolution": "Ensure the MPAN is active and enrolled on the DCC network before making this request."
+    },
+    "REG1101": {
+      "description": "The Metering Service cannot de-appoint itself",
+      "reason": "A Metering Service is attempting to de-appoint its own appointment. De-appointments must be initiated by an external party, such as a supplier.",
+      "resolution": "The de-appointment request must come from a third party (supplier). The Metering Service cannot self-de-appoint."
+    },
+    "REG1102": {
+      "description": "The Data Service cannot de-appoint itself",
+      "reason": "A Data Service is attempting to de-appoint its own appointment. De-appointments must be initiated by an external party, such as a supplier.",
+      "resolution": "The de-appointment request must come from a third party (supplier). The Data Service cannot self-de-appoint."
+    },
+    "REG1103": {
+      "description": "De-appointment Reason Code is invalid",
+      "reason": "The De-appointment Reason Code provided in the request is not a valid code in the ISD catalogue.",
+      "resolution": "Verify the De-appointment Reason Code against the ISD catalogue and provide a valid code before resubmitting."
+    },
+    "REG1104": {
+      "description": "Appointment Scenario is invalid for this event",
+      "reason": "The appointment scenario provided (e.g., 'COS', 'CSP') is not a valid scenario for the type of event being requested.",
+      "resolution": "Check the documentation for the event to see which appointment scenarios are supported. Correct the scenario code and resubmit."
+    },
+    "REG1105": {
+      "description": "The Supplier ID is invalid for the specified event",
+      "reason": "The supplier ID provided in the message is not valid for the action being requested. For example, a supplier ID for a 'change of supplier' event might be for a supplier that is not the current supplier.",
+      "resolution": "Verify the supplier ID against the business rules for the specific event and correct it as needed."
+    },
+    "REG1106": {
+      "description": "The meter is not a smart meter",
+      "reason": "The request involves a smart meter-specific action, but the meter ID provided is not associated with a smart meter.",
+      "resolution": "Verify that the meter is a smart meter before making a smart meter-specific request. If the meter is not smart, this action is not permitted."
+    },
+    "REG1107": {
+      "description": "Data item not applicable to this event",
+      "reason": "The message includes a data item that is not relevant or not permitted for the event being requested. This can happen if a data item from a different event type is included.",
+      "resolution": "Review the data items required for the specific event and remove any that are not applicable. Resubmit the message with only the required and optional data items."
+    },
+    "REG1108": {
+      "description": "Invalid message composition",
+      "reason": "The message composition is invalid. This could be due to missing a mandatory block, including a block that is conditionally mandatory when its condition is not met, or including an optional block that is not permitted for the event.",
+      "resolution": "Review the message composition rules for the event. Ensure that all mandatory blocks are included, all conditionally mandatory blocks are correctly used, and no prohibited optional blocks are present."
+    },
+    "REG1109": {
+      "description": "Message composition has an invalid structure",
+      "reason": "The message composition is invalid due to a structural issue, such as a repeating block that is not permitted to repeat or a nested block that is not allowed.",
+      "resolution": "Check the message structure rules and adjust the composition to be valid. For example, if a block is not permitted to repeat, ensure it is only included once."
+    },
+    "REG1110": {
+      "description": "Invalid GSP group ID",
+      "reason": "The GSP group ID provided is not a valid ID listed in the ISD catalogue.",
+      "resolution": "Verify the GSP group ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1111": {
+      "description": "Invalid market segment",
+      "reason": "The market segment provided (e.g., 'Smart', 'Advanced') is not a valid market segment listed in the ISD catalogue.",
+      "resolution": "Verify the market segment against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1112": {
+      "description": "Invalid consent granularity",
+      "reason": "The consent granularity provided is not a valid value for the event. This may occur if the selected granularity is not compatible with the meter type or market segment.",
+      "resolution": "Verify the consent granularity against the business rules and correct the value before resubmitting."
+    },
+    "REG1113": {
+      "description": "Invalid domestic premise indicator",
+      "reason": "The domestic premise indicator provided ('T' for True or 'F' for False) is not a valid value for the event. This might be due to a conflict with the market segment or other data items.",
+      "resolution": "Verify the domestic premise indicator against the business rules and correct the value before resubmitting."
+    },
+    "REG1114": {
+      "description": "Invalid energy direction",
+      "reason": "The energy direction provided ('I' for Import or 'E' for Export) is not a valid value for the event or is inconsistent with other data items.",
+      "resolution": "Verify the energy direction against the business rules and correct the value before resubmitting."
+    },
+    "REG1115": {
+      "description": "Invalid meter type",
+      "reason": "The meter type provided is not a valid meter type listed in the ISD catalogue.",
+      "resolution": "Verify the meter type against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1116": {
+      "description": "Invalid connection type indicator",
+      "reason": "The connection type indicator provided is not a valid value listed in the ISD catalogue.",
+      "resolution": "Verify the connection type indicator against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1117": {
+      "description": "Invalid meter asset provider",
+      "reason": "The Meter Asset Provider (MAP) ID provided is not a valid ID listed in the ISD catalogue.",
+      "resolution": "Verify the MAP ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1118": {
+      "description": "Invalid SMSO ID",
+      "reason": "The Smart Metering System Operator (SMSO) ID provided is not a valid ID listed in the ISD catalogue.",
+      "resolution": "Verify the SMSO ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1119": {
+      "description": "Invalid IHD install status",
+      "reason": "The In-Home Display (IHD) install status provided is not a valid value listed in the ISD catalogue.",
+      "resolution": "Verify the IHD install status against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1120": {
+      "description": "Invalid RMP status",
+      "reason": "The RMP (Registration Metering Point) status provided is not a valid value listed in the ISD catalogue.",
+      "resolution": "Verify the RMP status against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1121": {
+      "description": "Invalid MP status",
+      "reason": "The MP (Metering Point) status provided is not a valid value listed in the ISD catalogue.",
+      "resolution": "Verify the MP status against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1122": {
+      "description": "Invalid meter location code",
+      "reason": "The meter location code provided is not a valid value listed in the ISD catalogue.",
+      "resolution": "Verify the meter location code against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1123": {
+      "description": "Invalid de-appointment reason code",
+      "reason": "The de-appointment reason code provided is not a valid value listed in the ISD catalogue.",
+      "resolution": "Verify the de-appointment reason code against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1124": {
+      "description": "Invalid consumption component class ID",
+      "reason": "The consumption component class ID provided is not a valid value listed in the ISD catalogue.",
+      "resolution": "Verify the consumption component class ID against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1125": {
+      "description": "Invalid settlement code",
+      "reason": "The settlement code provided is not a valid value listed in the ISD catalogue.",
+      "resolution": "Verify the settlement code against the ISD catalogue and correct the value before resubmitting."
+    },
+    "REG1126": {
+      "description": "Invalid supplier consumption amendment reason code",
+      "reason": "The supplier consumption amendment reason code is not a valid value.",
+      "resolution": "Verify the supplier consumption amendment reason code and correct the value before resubmitting."
+    },
+    "REG1127": {
+      "description": "Invalid consumption component indicator",
+      "reason": "The consumption component indicator is not a valid value.",
+      "resolution": "Verify the consumption component indicator and correct the value before resubmitting."
+    },
+    "REG1128": {
+      "description": "Invalid metered indicator",
+      "reason": "The metered indicator is not a valid value.",
+      "resolution": "Verify the metered indicator and correct the value before resubmitting."
+    },
+    "REG1129": {
+      "description": "Invalid traditional/fall back read frequency",
+      "reason": "The traditional/fall back read frequency is not a valid value.",
+      "resolution": "Verify the traditional/fall back read frequency and correct the value before resubmitting."
+    },
+    "REG1130": {
+      "description": "Invalid GSP group ID",
+      "reason": "The GSP group ID is not a valid value.",
+      "resolution": "Verify the GSP group ID and correct the value before resubmitting."
+    },
+    "REG1131": {
+      "description": "Invalid load shape domestic premise indicator",
+      "reason": "The load shape domestic premise indicator is not a valid value.",
+      "resolution": "Verify the load shape domestic premise indicator and correct the value before resubmitting."
+    },
+    "REG1132": {
+      "description": "Invalid load shape day off-peak total",
+      "reason": "The load shape day off-peak total is not a valid value.",
+      "resolution": "Verify the load shape day off-peak total and correct the value before resubmitting."
+    },
+    "REG1133": {
+      "description": "Invalid load shape day peak total",
+      "reason": "The load shape day peak total is not a valid value.",
+      "resolution": "Verify the load shape day peak total and correct the value before resubmitting."
+    },
+    "REG1134": {
+      "description": "Invalid load shape day total",
+      "reason": "The load shape day total is not a valid value.",
+      "resolution": "Verify the load shape day total and correct the value before resubmitting."
+    },
+    "REG1135": {
+      "description": "Invalid load shape period value",
+      "reason": "The load shape period value is not a valid value.",
+      "resolution": "Verify the load shape period value and correct the value before resubmitting."
+    },
+    "REG1136": {
+      "description": "Invalid load shape 7 day rolling total",
+      "reason": "The load shape 7 day rolling total is not a valid value.",
+      "resolution": "Verify the load shape 7 day rolling total and correct the value before resubmitting."
+    },
+    "REG1137": {
+      "description": "Invalid load shape 7 day rolling off-peak total",
+      "reason": "The load shape 7 day rolling off-peak total is not a valid value.",
+      "resolution": "Verify the load shape 7 day rolling off-peak total and correct the value before resubmitting."
+    },
+    "REG1138": {
+      "description": "Invalid load shape 7 day rolling peak total",
+      "reason": "The load shape 7 day rolling peak total is not a valid value.",
+      "resolution": "Verify the load shape 7 day rolling peak total and correct the value before resubmitting."
+    },
+    "REG1139": {
+      "description": "Invalid annual load shape total",
+      "reason": "The annual load shape total is not a valid value.",
+      "resolution": "Verify the annual load shape total and correct the value before resubmitting."
+    },
+    "REG1140": {
+      "description": "Invalid consumption component indicator",
+      "reason": "The consumption component indicator is not a valid value.",
+      "resolution": "Verify the consumption component indicator and correct the value before resubmitting."
+    },
+    "REG1141": {
+      "description": "Invalid meter reading method",
+      "reason": "The meter reading method is not a valid value.",
+      "resolution": "Verify the meter reading method and correct the value before resubmitting."
+    },
+    "REG1142": {
+      "description": "Invalid UTC period consumption value",
+      "reason": "The UTC period consumption value is not a valid value.",
+      "resolution": "Verify the UTC period consumption value and correct the value before resubmitting."
+    },
+    "REG1143": {
+      "description": "Invalid settlement period quality indicator",
+      "reason": "The settlement period quality indicator is not a valid value.",
+      "resolution": "Verify the settlement period quality indicator and correct the value before resubmitting."
+    },
+    "REG1144": {
+      "description": "Invalid consumption amendment supplier reference",
+      "reason": "The consumption amendment supplier reference is not a valid value.",
+      "resolution": "Verify the consumption amendment supplier reference and correct the value before resubmitting."
+    },
+    "REG1145": {
+      "description": "Invalid gross revised consumption",
+      "reason": "The gross revised consumption is not a valid value.",
+      "resolution": "Verify the gross revised consumption and correct the value before resubmitting."
+    },
+    "REG1146": {
+      "description": "Invalid DCC service flag",
+      "reason": "The DCC service flag is not a valid value.",
+      "resolution": "Verify the DCC service flag and correct the value before resubmitting."
+    },
+    "REG1147": {
+      "description": "Invalid publication description",
+      "reason": "The publication description is not a valid value.",
+      "resolution": "Verify the publication description and correct the value before resubmitting."
+    },
+    "REG1148": {
+      "description": "Invalid publication version ID",
+      "reason": "The publication version ID is not a valid value.",
+      "resolution": "Verify the publication version ID and correct the value before resubmitting."
+    },
+    "REG1149": {
+      "description": "Invalid distribution variant ID",
+      "reason": "The distribution variant ID is not a valid value.",
+      "resolution": "Verify the distribution variant ID and correct the value before resubmitting."
+    },
+    "REG1150": {
+      "description": "Invalid distribution variant name",
+      "reason": "The distribution variant name is not a valid value.",
+      "resolution": "Verify the distribution variant name and correct the value before resubmitting."
+    },
+    "REG1151": {
+      "description": "Invalid distribution variant description",
+      "reason": "The distribution variant description is not a valid value.",
+      "resolution": "Verify the distribution variant description and correct the value before resubmitting."
+    },
+    "REG1152": {
+      "description": "Invalid distribution variant version ID",
+      "reason": "The distribution variant version ID is not a valid value.",
+      "resolution": "Verify the distribution variant version ID and correct the value before resubmitting."
+    },
+    "REG1153": {
+      "description": "Invalid distribution variant format",
+      "reason": "The distribution variant format is not a valid value.",
+      "resolution": "Verify the distribution variant format and correct the value before resubmitting."
+    },
+    "REG1154": {
+      "description": "Invalid response code",
+      "reason": "The response code is not a valid value.",
+      "resolution": "Verify the response code and correct the value before resubmitting."
+    },
+    "REG1155": {
+      "description": "Invalid response message",
+      "reason": "The response message is not a valid value.",
+      "resolution": "Verify the response message and correct the value before resubmitting."
+    },
+    "REG1156": {
+      "description": "Invalid schema version",
+      "reason": "The schema version is not a valid value.",
+      "resolution": "Verify the schema version and correct the value before resubmitting."
+    },
+    "REG1157": {
+      "description": "Invalid event code",
+      "reason": "The event code is not a valid value.",
+      "resolution": "Verify the event code and correct the value before resubmitting."
+    },
+    "REG1158": {
+      "description": "Invalid MPAN Core",
+      "reason": "The MPAN Core is not a valid value.",
+      "resolution": "Verify the MPAN Core and correct the value before resubmitting."
+    },
+    "REG1159": {
+      "description": "Invalid Distributor DIP ID",
+      "reason": "The Distributor DIP ID is not a valid value.",
+      "resolution": "Verify the Distributor DIP ID and correct the value before resubmitting."
+    },
+    "REG1160": {
+      "description": "Invalid GSP Group ID",
+      "reason": "The GSP Group ID is not a valid value.",
+      "resolution": "Verify the GSP Group ID and correct the value before resubmitting."
+    },
+    "REG1161": {
+      "description": "Invalid CSS Registration ID",
+      "reason": "The CSS Registration ID is not a valid value.",
+      "resolution": "Verify the CSS Registration ID and correct the value before resubmitting."
+    },
+    "REG1162": {
+      "description": "Invalid Supplier DIP ID",
+      "reason": "The Supplier DIP ID is not a valid value.",
+      "resolution": "Verify the Supplier DIP ID and correct the value before resubmitting."
+    },
+    "REG1163": {
+      "description": "Invalid Meter ID",
+      "reason": "The Meter ID is not a valid value.",
+      "resolution": "Verify the Meter ID and correct the value before resubmitting."
+    },
+    "REG1164": {
+      "description": "Invalid Meter Asset Provider ID",
+      "reason": "The Meter Asset Provider ID is not a valid value.",
+      "resolution": "Verify the Meter Asset Provider ID and correct the value before resubmitting."
+    },
+    "REG1165": {
+      "description": "Invalid Metering Service DIP ID",
+      "reason": "The Metering Service DIP ID is not a valid value.",
+      "resolution": "Verify the Metering Service DIP ID and correct the value before resubmitting."
+    },
+    "REG1166": {
+      "description": "Invalid Data Service DIP ID",
+      "reason": "The Data Service DIP ID is not a valid value.",
+      "resolution": "Verify the Data Service DIP ID and correct the value before resubmitting."
+    },
+    "REG1167": {
+      "description": "Invalid MDR DIP ID",
+      "reason": "The MDR DIP ID is not a valid value.",
+      "resolution": "Verify the MDR DIP ID and correct the value before resubmitting."
+    },
+    "REG1168": {
+      "description": "Invalid DUOS Tariff ID",
+      "reason": "The DUOS Tariff ID is not a valid value.",
+      "resolution": "Verify the DUOS Tariff ID and correct the value before resubmitting."
+    },
+    "REG1169": {
+      "description": "Invalid Profile Class",
+      "reason": "The Profile Class is not a valid value.",
+      "resolution": "Verify the Profile Class and correct the value before resubmitting."
+    },
+    "REG1170": {
+      "description": "Invalid SSC",
+      "reason": "The SSC is not a valid value.",
+      "resolution": "Verify the SSC and correct the value before resubmitting."
+    },
+    "REG1171": {
+      "description": "Invalid Comms Hub Serial Number",
+      "reason": "The Comms Hub Serial Number is not a valid value.",
+      "resolution": "Verify the Comms Hub Serial Number and correct the value before resubmitting."
+    },
+    "REG1172": {
+      "description": "Invalid Comms Hub GUID",
+      "reason": "The Comms Hub GUID is not a valid value.",
+      "resolution": "Verify the Comms Hub GUID and correct the value before resubmitting."
+    },
+    "REG1173": {
+      "description": "Invalid GPF (Gas) GUID",
+      "reason": "The GPF (Gas) GUID is not a valid value.",
+      "resolution": "Verify the GPF (Gas) GUID and correct the value before resubmitting."
+    },
+    "REG1174": {
+      "description": "Invalid EHSS",
+      "reason": "The EHSS is not a valid value.",
+      "resolution": "Verify the EHSS and correct the value before resubmitting."
+    },
+    "REG1175": {
+      "description": "Invalid EHEF",
+      "reason": "The EHEF is not a valid value.",
+      "resolution": "Verify the EHEF and correct the value before resubmitting."
+    }
+  },
+  "interfaces": [
+    {
+      "id": "IF-001",
+      "name": "Supplier to Registration Service - Supplier Appointment Request",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "Supplier sends a request to the Registration Service to appoint Service Providers to an MPAN. The request will include one of the following scenarios: Change of Supplier, Change of Service Provider, or Update Service Provider. The Supplier may also nominate a Meter Data Retriever (MDR) that they would like assigned to the MPAN.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "header", "title": "B002 - Incoming Supplier (Mandatory for COS)" },
+        { "type": "block", "id": "B002_IncomingSupplier" },
+        { "type": "header", "title": "B003 - Outgoing Supplier (Conditionally Mandatory for COS)" },
+        { "type": "block", "id": "B003_OutgoingSupplier" },
+        { "type": "header", "title": "M0 - MPAN (Mandatory)" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B012 - Requesting Supplier (Mandatory)" },
+        { "type": "block", "id": "B012_RequestingSupplier" },
+        { "type": "header", "title": "B070 - Proposed Metering Service (Conditionally Mandatory)" },
+        { "type": "block", "id": "B070_ProposedMS" },
+        { "type": "header", "title": "B071 - Proposed Data Service (Conditionally Mandatory)" },
+        { "type": "block", "id": "B071_ProposedDS" },
+        { "type": "header", "title": "B006 - Customer Direct Contracts (Optional)" },
+        { "type": "block", "id": "B006_CustomerDirectContracts" },
+        { "type": "header", "title": "B030 - IHD Information (Optional)" },
+        { "type": "block", "id": "B030_IHD_Info" },
+        { "type": "header", "title": "B031 - SMSO Info (Optional)" },
+        { "type": "block", "id": "B031_SMSO_Info" },
+        { "type": "header", "title": "B032 - Legacy Info (Optional)" },
+        { "type": "block", "id": "B032_LegacyInfo" },
+        { "type": "header", "title": "B037 - Related MPANs (Conditionally Mandatory)" },
+        { "type": "block", "id": "B037_RelatedMPAN" },
+        { "type": "header", "title": "B035 - Linked MPAN (Conditionally Mandatory)" },
+        { "type": "block", "id": "B035_LinkedMPAN" },
+        { "type": "header", "title": "B068 - MPAN Consent Info (Mandatory for COS)" },
+        { "type": "block", "id": "B068_ConsentInfo" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0005", "REG0006", "REG0007", "REG1021", "REG1022", "REG1024", "REG1025", "REG1026", "REG1027", "REG1028", "REG1031", "REG1032", "REG1033", "REG1034", "REG1038", "REG1039", "REG1040", "REG1041", "REG1050", "REG1051", "REG1052", "REG1053", "REG1054", "REG1055", "REG1056", "REG1057", "REG1058", "REG1059", "REG1060", "REG1061", "REG1062", "REG1063", "REG1064", "REG1065", "REG1067", "REG1071", "REG1072", "REG1073", "REG1074"]
+    },
+    {
+      "id": "IF-002",
+      "name": "Registration Service to Supplier - Service Provider Appointment Outcome",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service provides an outcome of a previous Service Provider Appointment Request initiated by a Supplier. This includes details of the appointment outcome and any applicable rejection codes.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "header", "title": "M0 - MPAN (Mandatory)" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B007_AppointmentOutcome" },
+        { "type": "header", "title": "B013 - CSS Registration Request ID" },
+        { "type": "block", "id": "B013_CSS_ID" }
+      ],
+      "rejectionCodeIds": ["REG1043", "REG1075", "REG1076", "REG1077", "REG1078", "REG1079", "REG1080", "REG1081", "REG1082", "REG1083", "REG1084", "REG1085", "REG1086", "REG1087", "REG1088", "REG1089", "REG1090", "REG1091", "REG1092", "REG1093", "REG1094", "REG1095", "REG1096", "REG1097", "REG1098", "REG1099", "REG1100", "REG1101", "REG1102", "REG1103", "REG1104", "REG1105", "REG1106", "REG1107", "REG1108", "REG1109", "REG1110", "REG1111", "REG1112", "REG1113", "REG1114", "REG1115", "REG1116", "REG1117", "REG1118", "REG1119", "REG1120", "REG1121", "REG1122", "REG1123", "REG1124", "REG1125", "REG1126", "REG1127", "REG1128", "REG1129", "REG1130", "REG1131", "REG1132", "REG1133", "REG1134", "REG1135", "REG1136", "REG1137", "REG1138", "REG1139", "REG1140", "REG1141", "REG1142", "REG1143", "REG1144", "REG1145", "REG1146", "REG1147", "REG1148", "REG1149", "REG1150", "REG1151", "REG1152", "REG1153", "REG1154", "REG1155", "REG1156", "REG1157", "REG1158", "REG1159", "REG1160", "REG1161", "REG1162", "REG1163", "REG1164", "REG1165", "REG1166", "REG1167", "REG1168", "REG1169", "REG1170", "REG1171", "REG1172", "REG1173", "REG1174", "REG1175"]
+    },
+    {
+      "id": "IF-003",
+      "name": "Registration Service to Outgoing Supplier - Supplier Change",
+      "sender": "Registration Service",
+      "receiver": "Outgoing Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service notifies the Outgoing Supplier that their appointment to an MPAN is to be de-registered. The de-registration will be made effective from the date provided in the message.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B003_OutgoingSupplier" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B004_DomPremiseIndicator" },
+        { "type": "block", "id": "B005_IncumbentServiceProviders" },
+        { "type": "block", "id": "B022_MPAN_Address" },
+        { "type": "block", "id": "B023_MPAN_ConnectionInfo" },
+        { "type": "block", "id": "B024_DUOS_Tariff" },
+        { "type": "block", "id": "B025_EnergisationStatus" },
+        { "type": "block", "id": "B026_MarketSegment" },
+        { "type": "block", "id": "B027_AnnualConsumption" },
+        { "type": "block", "id": "B029_DCC_Enrolment" },
+        { "type": "block", "id": "B030_IHD_Info" },
+        { "type": "block", "id": "B031_SMSO_Info" },
+        { "type": "block", "id": "B032_LegacyInfo" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-004",
+      "name": "Outgoing Supplier to Registration Service - Supplier Change Confirmation",
+      "sender": "Outgoing Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Outgoing Supplier confirms that they acknowledge and accept the de-registration of their appointment from an MPAN as notified by the Registration Service.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B003_OutgoingSupplier" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "R0_Response" },
+        { "type": "block", "id": "B013_CSS_ID" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0005", "REG0006", "REG1021", "REG1078"]
+    },
+    {
+      "id": "IF-005",
+      "name": "Registration Service to Incoming Supplier - Supplier Change",
+      "sender": "Registration Service",
+      "receiver": "Incoming Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service notifies the Incoming Supplier that their appointment to an MPAN is to be registered. The registration will be made effective from the date provided in the message.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B002_IncomingSupplier" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B004_DomPremiseIndicator" },
+        { "type": "block", "id": "B005_IncumbentServiceProviders" },
+        { "type": "block", "id": "B022_MPAN_Address" },
+        { "type": "block", "id": "B023_MPAN_ConnectionInfo" },
+        { "type": "block", "id": "B024_DUOS_Tariff" },
+        { "type": "block", "id": "B025_EnergisationStatus" },
+        { "type": "block", "id": "B026_MarketSegment" },
+        { "type": "block", "id": "B027_AnnualConsumption" },
+        { "type": "block", "id": "B029_DCC_Enrolment" },
+        { "type": "block", "id": "B030_IHD_Info" },
+        { "type": "block", "id": "B031_SMSO_Info" },
+        { "type": "block", "id": "B032_LegacyInfo" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-006",
+      "name": "Incoming Supplier to Registration Service - Supplier Change Confirmation",
+      "sender": "Incoming Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Incoming Supplier confirms that they acknowledge and accept the registration of their appointment to an MPAN as notified by the Registration Service.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B002_IncomingSupplier" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "R0_Response" },
+        { "type": "block", "id": "B013_CSS_ID" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0005", "REG0006", "REG1078"]
+    },
+    {
+      "id": "IF-007",
+      "name": "Supplier to Registration Service - Service Provider De-Appointment Request",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "Supplier sends a request to the Registration Service to de-appoint a Metering Service or Data Service from an MPAN. The Supplier may also nominate a Meter Data Retriever (MDR) that they would like assigned to the MPAN. This message is used when the supplier's own appointment is not changing.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B008 - Metering Service De-Appointment Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B008_MS_DeApp" },
+        { "type": "header", "title": "B009 - Data Service De-Appointment Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B009_DS_DeApp" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0007", "REG0009", "REG1019", "REG1020", "REG1021", "REG1024", "REG1038", "REG1039", "REG1042", "REG1043", "REG1044", "REG1045", "REG1078", "REG1089", "REG1090", "REG1091", "REG1099", "REG1103", "REG1107", "REG1108", "REG1109", "REG1110", "REG1111", "REG1112", "REG1113", "REG1114", "REG1115", "REG1116", "REG1117", "REG1118", "REG1119", "REG1120", "REG1121", "REG1122", "REG1123", "REG1124", "REG1125", "REG1126", "REG1127", "REG1128", "REG1129", "REG1130", "REG1131", "REG1132", "REG1133", "REG1134", "REG1135", "REG1136", "REG1137", "REG1138", "REG1139", "REG1140", "REG1141", "REG1142", "REG1143", "REG1144", "REG1145", "REG1146", "REG1147", "REG1148", "REG1149", "REG1150", "REG1151", "REG1152", "REG1153", "REG1154", "REG1155", "REG1156", "REG1157", "REG1158", "REG1159", "REG1160", "REG1161", "REG1162", "REG1163", "REG1164", "REG1165", "REG1166", "REG1167", "REG1168", "REG1169", "REG1170", "REG1171", "REG1172", "REG1173", "REG1174", "REG1175"]
+    },
+    {
+      "id": "IF-008",
+      "name": "Registration Service to De-Appointed MS - De-Appointment Notification",
+      "sender": "Registration Service",
+      "receiver": "De-Appointed Metering Service",
+      "supplier_type": "none",
+      "context": "The Registration Service notifies the de-appointed Metering Service that their appointment to an MPAN is to be de-registered. The de-registration will be made effective from the date provided in the message.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B008_MS_DeApp" },
+        { "type": "header", "title": "B094 - Reverse Migration Notification (Conditionally Mandatory)" },
+        { "type": "block", "id": "B094_ReverseMigration" },
+        { "type": "header", "title": "B095 - Incoming MOP Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B095_IncomingMOP" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-009",
+      "name": "De-Appointed MS to Registration Service - De-Appointment Confirmation",
+      "sender": "De-Appointed Metering Service",
+      "receiver": "Registration Service",
+      "supplier_type": "none",
+      "context": "The de-appointed Metering Service confirms that they acknowledge and accept the de-registration of their appointment from an MPAN as notified by the Registration Service.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B008_MS_DeApp" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-010",
+      "name": "Registration Service to De-Appointed DS - De-Appointment Notification",
+      "sender": "Registration Service",
+      "receiver": "De-Appointed Data Service",
+      "supplier_type": "none",
+      "context": "The Registration Service notifies the de-appointed Data Service that their appointment to an MPAN is to be de-registered. The de-registration will be made effective from the date provided in the message.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B009_DS_DeApp" },
+        { "type": "header", "title": "B094 - Reverse Migration Notification (Conditionally Mandatory)" },
+        { "type": "block", "id": "B094_ReverseMigration" },
+        { "type": "header", "title": "B096 - Incoming DC Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B096_IncomingDC" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-011",
+      "name": "De-Appointed DS to Registration Service - De-Appointment Confirmation",
+      "sender": "De-Appointed Data Service",
+      "receiver": "Registration Service",
+      "supplier_type": "none",
+      "context": "The de-appointed Data Service confirms that they acknowledge and accept the de-registration of their appointment from an MPAN as notified by the Registration Service.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B009_DS_DeApp" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-012",
+      "name": "Registration Service to Incoming MS - Service Provider Appointment Notification",
+      "sender": "Registration Service",
+      "receiver": "Incoming Metering Service",
+      "supplier_type": "none",
+      "context": "The Registration Service notifies the Incoming Metering Service that their appointment to an MPAN is to be registered. The registration will be made effective from the date provided in the message.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B014_MS_Details" },
+        { "type": "block", "id": "B022_MPAN_Address" },
+        { "type": "block", "id": "B023_MPAN_ConnectionInfo" },
+        { "type": "block", "id": "B024_DUOS_Tariff" },
+        { "type": "block", "id": "B025_EnergisationStatus" },
+        { "type": "block", "id": "B026_MarketSegment" },
+        { "type": "block", "id": "B027_AnnualConsumption" },
+        { "type": "block", "id": "B029_DCC_Enrolment" },
+        { "type": "block", "id": "B030_IHD_Info" },
+        { "type": "block", "id": "B031_SMSO_Info" },
+        { "type": "block", "id": "B032_LegacyInfo" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-013",
+      "name": "Incoming MS to Registration Service - Service Provider Appointment Confirmation",
+      "sender": "Incoming Metering Service",
+      "receiver": "Registration Service",
+      "supplier_type": "none",
+      "context": "The Incoming Metering Service confirms that they acknowledge and accept the registration of their appointment to an MPAN as notified by the Registration Service.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B014_MS_Details" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-014",
+      "name": "Registration Service to Incoming DS - Service Provider Appointment Notification",
+      "sender": "Registration Service",
+      "receiver": "Incoming Data Service",
+      "supplier_type": "none",
+      "context": "The Registration Service notifies the Incoming Data Service that their appointment to an MPAN is to be registered. The registration will be made effective from the date provided in the message.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B015_DS_Details" },
+        { "type": "block", "id": "B022_MPAN_Address" },
+        { "type": "block", "id": "B023_MPAN_ConnectionInfo" },
+        { "type": "block", "id": "B024_DUOS_Tariff" },
+        { "type": "block", "id": "B025_EnergisationStatus" },
+        { "type": "block", "id": "B026_MarketSegment" },
+        { "type": "block", "id": "B027_AnnualConsumption" },
+        { "type": "block", "id": "B029_DCC_Enrolment" },
+        { "type": "block", "id": "B030_IHD_Info" },
+        { "type": "block", "id": "B031_SMSO_Info" },
+        { "type": "block", "id": "B032_LegacyInfo" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-015",
+      "name": "Incoming DS to Registration Service - Service Provider Appointment Confirmation",
+      "sender": "Incoming Data Service",
+      "receiver": "Registration Service",
+      "supplier_type": "none",
+      "context": "The Incoming Data Service confirms that they acknowledge and accept the registration of their appointment to an MPAN as notified by the Registration Service.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B015_DS_Details" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-016",
+      "name": "Registration Service to Outgoing Supplier - Change to Supplier’s Service Providers",
+      "sender": "Registration Service",
+      "receiver": "Outgoing Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service notifies the Outgoing Supplier that the Metering or Data Service for an MPAN that they are responsible for has been de-appointed.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B002_IncomingSupplier" },
+        { "type": "header", "title": "B008 - MS De-Appointment Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B008_MS_DeApp" },
+        { "type": "header", "title": "B009 - DS De-Appointment Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B009_DS_DeApp" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-017",
+      "name": "Outgoing Supplier to Registration Service - Change to Supplier’s Service Providers Confirmation",
+      "sender": "Outgoing Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Outgoing Supplier acknowledges and accepts the de-appointment of a Service Provider for an MPAN they are responsible for.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B002_IncomingSupplier" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": ["REG0000"]
+    },
+    {
+      "id": "IF-018",
+      "name": "Incoming MS to Outgoing MS - Partner Service Provider Notification",
+      "sender": "Incoming Metering Service",
+      "receiver": "Outgoing Metering Service",
+      "supplier_type": "none",
+      "context": "The Incoming Metering Service notifies the Outgoing Metering Service that it has been appointed to an MPAN and will be providing services from the effective date. This is for information only.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B016_Partner_MS_Info" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-019",
+      "name": "Incoming DS to Outgoing DS - Partner Service Provider Notification",
+      "sender": "Incoming Data Service",
+      "receiver": "Outgoing Data Service",
+      "supplier_type": "none",
+      "context": "The Incoming Data Service notifies the Outgoing Data Service that it has been appointed to an MPAN and will be providing services from the effective date. This is for information only.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B017_Partner_DS_Info" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-020",
+      "name": "Registration Service to Supplier - Supplier Service Provider Info Update",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service provides the Supplier with updated information for an MPAN they are responsible for. This could include changes to Service Provider IDs, Meter IDs, etc.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B002_IncomingSupplier" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B014 - Incoming Metering Service (Conditionally Mandatory)" },
+        { "type": "block", "id": "B014_MS_Details" },
+        { "type": "header", "title": "B015 - Incoming Data Service (Conditionally Mandatory)" },
+        { "type": "block", "id": "B015_DS_Details" },
+        { "type": "block", "id": "B022_MPAN_Address" },
+        { "type": "block", "id": "B023_MPAN_ConnectionInfo" },
+        { "type": "block", "id": "B024_DUOS_Tariff" },
+        { "type": "block", "id": "B025_EnergisationStatus" },
+        { "type": "block", "id": "B026_MarketSegment" },
+        { "type": "block", "id": "B027_AnnualConsumption" },
+        { "type": "block", "id": "B029_DCC_Enrolment" },
+        { "type": "block", "id": "B030_IHD_Info" },
+        { "type": "block", "id": "B031_SMSO_Info" },
+        { "type": "block", "id": "B032_LegacyInfo" },
+        { "type": "block", "id": "B033_NewMeterInfo" },
+        { "type": "block", "id": "B034_MeterMAPInfo" },
+        { "type": "block", "id": "B035_LinkedMPAN" },
+        { "type": "block", "id": "B037_RelatedMPAN" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-021",
+      "name": "Registration Service to Incoming Supplier - Customer Direct Contract Info",
+      "sender": "Registration Service",
+      "receiver": "Incoming Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service provides the Incoming Supplier with information about Customer Direct Contracts associated with a newly registered MPAN. This information is a confirmation of a direct contract between the customer and a Service Provider.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B020 - Customer Direct Contract MS Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B020_CDC_MS_Info" },
+        { "type": "header", "title": "B021 - Customer Direct Contract DS Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B021_CDC_DS_Info" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-022",
+      "name": "Supplier to Registration Service - Customer Direct Contract Update",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier provides the Registration Service with updated information about a Customer Direct Contract for an MPAN they are responsible for.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B020_CDC_MS_Info" },
+        { "type": "block", "id": "B021_CDC_DS_Info" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0007", "REG1019", "REG1020", "REG1021", "REG1071", "REG1072", "REG1073", "REG1074"]
+    },
+    {
+      "id": "IF-023",
+      "name": "Registration Service to Supplier - MPAN Status Update",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service notifies the Supplier of a change in an MPAN's status. This could be due to energisation, de-energisation, or another event affecting the MPAN's live status.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B025 - Energisation Status (Conditionally Mandatory)" },
+        { "type": "block", "id": "B025_EnergisationStatus" },
+        { "type": "header", "title": "B041 - Disconnection Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B041_DisconnectionInfo" },
+        { "type": "header", "title": "B098 - Reconnection Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B098_ReconnectionInfo" },
+        { "type": "header", "title": "B042 - CSS De-Registration Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B042_CSS_DeRegistration" },
+        { "type": "header", "title": "B079 - Meter Point Registration Statuses (Conditionally Mandatory)" },
+        { "type": "block", "id": "B079_MP_Status" },
+        { "type": "header", "title": "B080 - Green Deal Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B080_GreenDeal" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-024",
+      "name": "Supplier to Registration Service - Supplier Info Update",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier provides the Registration Service with an update to information for an MPAN they are responsible for. This could include changes to IHD status, SMSO, or legacy data.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B030 - IHD Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B030_IHD_Info" },
+        { "type": "header", "title": "B031 - SMSO Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B031_SMSO_Info" },
+        { "type": "header", "title": "B032 - Legacy Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B032_LegacyInfo" },
+        { "type": "header", "title": "B060 - Additional Information (Optional)" },
+        { "type": "block", "id": "B060_AdditionalInfo" },
+        { "type": "header", "title": "B028 - Domestic Premise Indicator (Conditionally Mandatory)" },
+        { "type": "block", "id": "B028_DomPremiseIndicator" },
+        { "type": "header", "title": "B078 - Energy Direction (Conditionally Mandatory)" },
+        { "type": "block", "id": "B078_EnergyDirection" },
+        { "type": "header", "title": "B067 - Connection Type (Conditionally Mandatory)" },
+        { "type": "block", "id": "B067_ConnectionType" },
+        { "type": "header", "title": "B001 - GSP Effective From (Conditionally Mandatory)" },
+        { "type": "block", "id": "B001_GSPEffectiveFrom" },
+        { "type": "header", "title": "B026 - Market Segment (Conditionally Mandatory)" },
+        { "type": "block", "id": "B026_MarketSegment" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0009", "REG1019", "REG1020", "REG1021", "REG1022", "REG1023", "REG1024", "REG1038", "REG1039", "REG1040", "REG1041", "REG1042", "REG1043", "REG1044", "REG1045", "REG1078"]
+    },
+    {
+      "id": "IF-025",
+      "name": "Registration Service to Supplier - Meter Status Update",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service notifies the Supplier of a change in an MPAN's meter information. This could be due to a meter installation, exchange, or removal.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B033 - New Meter Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B033_NewMeterInfo" },
+        { "type": "header", "title": "B034 - Meter MAP Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B034_MeterMAPInfo" },
+        { "type": "header", "title": "B039 - Removed Meter Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B039_RemovedMeterInfo" },
+        { "type": "header", "title": "B093 - Comms Hub Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B093_CommsHubInfo" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-026",
+      "name": "Supplier to Registration Service - Meter Data Update",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier provides the Registration Service with updated meter-specific information for an MPAN they are responsible for. This could include a meter exchange, installation, or removal.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B033 - New/Revised Meter Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B033_NewMeterInfo" },
+        { "type": "header", "title": "B034 - Meter MAP Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B034_MeterMAPInfo" },
+        { "type": "header", "title": "B039 - Removed Meter Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B039_RemovedMeterInfo" },
+        { "type": "header", "title": "B093 - Comms Hub Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B093_CommsHubInfo" },
+        { "type": "header", "title": "B060 - Additional Information (Optional)" },
+        { "type": "block", "id": "B060_AdditionalInfo" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0001", "REG0002", "REG0003", "REG0004", "REG0008", "REG1001", "REG1002", "REG1003", "REG1004", "REG1005", "REG1006", "REG1007", "REG1008", "REG1009", "REG1010", "REG1011", "REG1012", "REG1013", "REG1014", "REG1015", "REG1016", "REG1017", "REG1018", "REG1028", "REG1029", "REG1030", "REG1046", "REG1047", "REG1048", "REG1049"]
+    },
+    {
+      "id": "IF-027",
+      "name": "Registration Service to Incumbent MS - Meter Data Update",
+      "sender": "Registration Service",
+      "receiver": "Incumbent Metering Service",
+      "supplier_type": "none",
+      "context": "The Registration Service notifies the incumbent Metering Service of a change in an MPAN's meter information. This could include a meter exchange, installation, or removal.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B033 - New Meter Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B033_NewMeterInfo" },
+        { "type": "header", "title": "B034 - Meter MAP Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B034_MeterMAPInfo" },
+        { "type": "header", "title": "B039 - Removed Meter Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B039_RemovedMeterInfo" },
+        { "type": "header", "title": "B074 - MPAN Existing Meter Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B074_ExistingMeterInfo" },
+        { "type": "header", "title": "B075 - Existing Meter MAP Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B075_ExistingMeterMAPInfo" },
+        { "type": "header", "title": "B093 - Comms Hub Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B093_CommsHubInfo" },
+        { "type": "header", "title": "B060 - Additional Information (Optional)" },
+        { "type": "block", "id": "B060_AdditionalInfo" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-028",
+      "name": "Registration Service to Supplier - Meter Energisation Status Notification",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service provides the Supplier with a notification of the outcome of a Meter Energisation/De-Energisation attempt. This message also provides a reason why the action may not have been carried out.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B040_EnergisationFailure" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-029",
+      "name": "Registration Service to Supplier - Settlement Run Notification",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service provides the Supplier with a notification of a newly executed settlement run. This notification will contain details about the settlement run.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B043_ImpactedParticipants" },
+        { "type": "block", "id": "B049_SettlementRunInfo" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-030",
+      "name": "SDS to BSC - Settlement Data",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Balancing and Settlement Code (BSC)",
+      "supplier_type": "none",
+      "context": "The SDS provides half-hourly data for a metering point to the BSC for settlement purposes. This data may be a combination of actual and estimated data.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B050_ECS_CCC_Data" },
+        { "type": "header", "title": "B046 - UTC Settlement Date (Mandatory)" },
+        { "type": "block", "id": "B046_UTCSettlementDate" },
+        { "type": "header", "title": "B048 - UTC Settlement Period Consumption Defaulted Data (Conditionally Mandatory)" },
+        { "type": "block", "id": "B048_UTCSettlementDefaulted" },
+        { "type": "header", "title": "B044 - Data Service Information (Mandatory)" },
+        { "type": "block", "id": "B044_DataServiceInfo" },
+        { "type": "header", "title": "B045 - MQID (Mandatory)" },
+        { "type": "block", "id": "B045_MQID" },
+        { "type": "block", "id": "B047_UTCSettlementConsumption" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-031",
+      "name": "BSC to SDS - Settlement Data Acknowledgement",
+      "sender": "Balancing and Settlement Code (BSC)",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "none",
+      "context": "The BSC acknowledges the receipt of settlement data from the SDS.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-032",
+      "name": "SDS to Supplier - Settlement Data",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The SDS provides half-hourly settlement data to the Supplier for a metering point. This data may be a combination of actual and estimated data.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B050_ECS_CCC_Data" },
+        { "type": "header", "title": "B046 - UTC Settlement Date (Mandatory)" },
+        { "type": "block", "id": "B046_UTCSettlementDate" },
+        { "type": "header", "title": "B048 - UTC Settlement Period Consumption Defaulted Data (Conditionally Mandatory)" },
+        { "type": "block", "id": "B048_UTCSettlementDefaulted" },
+        { "type": "header", "title": "B044 - Data Service Information (Mandatory)" },
+        { "type": "block", "id": "B044_DataServiceInfo" },
+        { "type": "header", "title": "B045 - MQID (Mandatory)" },
+        { "type": "block", "id": "B045_MQID" },
+        { "type": "block", "id": "B047_UTCSettlementConsumption" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-033",
+      "name": "Supplier to SDS - Settlement Data Acknowledgement",
+      "sender": "Supplier",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier acknowledges the receipt of settlement data from the SDS.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": ["REG0000"]
+    },
+    {
+      "id": "IF-034",
+      "name": "SDS to Supplier - Load Shape Data",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The SDS provides Load Shape data to the Supplier for an MPAN they are responsible for.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B051_LoadShapeCriteria" },
+        { "type": "header", "title": "B052 Load Shape Period Data (Conditionally Mandatory)" },
+        { "type": "block", "id": "B052_LoadShapePeriodData" },
+        { "type": "header", "title": "B054 Load Shape Annual Consumption (Conditionally Mandatory)" },
+        { "type": "block", "id": "B054_LoadShapeAnnualConsumption" },
+        { "type": "header", "title": "B053 Load Shape Total Data (Conditionally Mandatory)" },
+        { "type": "block", "id": "B053_LoadShapeTotalData" },
+        { "type": "block", "id": "B028_DomPremiseIndicator" },
+        { "type": "block", "id": "B067_ConnectionType" },
+        { "type": "block", "id": "B001_GSPEffectiveFrom" },
+        { "type": "block", "id": "B026_MarketSegment" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-035",
+      "name": "Supplier to SDS - Load Shape Data Acknowledgement",
+      "sender": "Supplier",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier acknowledges the receipt of Load Shape data from the SDS.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": ["REG0000"]
+    },
+    {
+      "id": "IF-036",
+      "name": "SDS to Supplier - Supplier Advisory Notification",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The SDS notifies the Supplier of a specific event or status that may require their attention, such as a metering issue or data discrepancy.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B057_SupplierAdvisory" },
+        { "type": "header", "title": "B069 - Advisory Meter ID" },
+        { "type": "block", "id": "B069_AdvisoryMeterID" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-037",
+      "name": "Supplier to SDS - Supplier Advisory Notification Acknowledgement",
+      "sender": "Supplier",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier acknowledges the receipt of a Supplier Advisory Notification from the SDS.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": ["REG0000"]
+    },
+    {
+      "id": "IF-038",
+      "name": "Supplier to SDS - Supplier Nominated Annual Consumption",
+      "sender": "Supplier",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier provides the SDS with a nominated Annual Consumption value for an MPAN. This value is used by the SDS for estimation and consumption calculations.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B058_SupplierNominatedAC" }
+      ],
+      "rejectionCodeIds": ["REG0000"]
+    },
+    {
+      "id": "IF-039",
+      "name": "SDS to Supplier - Supplier Nominated Annual Consumption Acknowledgement",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The SDS acknowledges the receipt of the Supplier Nominated Annual Consumption data.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-040",
+      "name": "Supplier to SDS - Off-Peak Declaration",
+      "sender": "Supplier",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier provides the SDS with a declaration of off-peak consumption for a specific day. This is used by the SDS for settlement purposes.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B097_OffPeakDeclaration" }
+      ],
+      "rejectionCodeIds": ["REG0000"]
+    },
+    {
+      "id": "IF-041",
+      "name": "SDS to Supplier - Off-Peak Declaration Acknowledgement",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The SDS acknowledges the receipt of the Off-Peak Declaration from the Supplier.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-042",
+      "name": "Supplier to SDS - Consumption Amendment",
+      "sender": "Supplier",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier sends a request to the SDS to amend consumption data for a specific period. This is used to correct previously submitted data.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "B073_ConsumptionAmendmentReq" }
+      ],
+      "rejectionCodeIds": ["REG0000"]
+    },
+    {
+      "id": "IF-043",
+      "name": "SDS to Supplier - Consumption Amendment Acknowledgment",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The SDS acknowledges the receipt of a Consumption Amendment request from the Supplier.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R1_ConsumptionReqResponse" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-044",
+      "name": "Supplier to Registration Service - Linked MPAN Relationship Request",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier sends a request to the Registration Service to establish or update a Linked MPAN relationship. This is typically used for import/export pairs.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "header", "title": "M1 - MPAN Relationship Principal MPAN (Mandatory)" },
+        { "type": "block", "id": "M1_PrincipalMPAN" },
+        { "type": "header", "title": "B090 - MPAN Relationship Subsidiary MPAN (Conditionally Mandatory)" },
+        { "type": "block", "id": "B090_SubsidiaryMPAN" },
+        { "type": "header", "title": "B091 - Additional Information (Optional)" },
+        { "type": "block", "id": "B091_AdditionalInfo" },
+        { "type": "header", "title": "B036 - Linked Meter Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B036_LinkedMeterDetails" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0007", "REG1021", "REG1050", "REG1051", "REG1052", "REG1053", "REG1054", "REG1055", "REG1056", "REG1057", "REG1058", "REG1059", "REG1060"]
+    },
+    {
+      "id": "IF-045",
+      "name": "Registration Service to Supplier - Linked MPAN Relationship Update",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service notifies the Supplier of an update to a Linked MPAN relationship. This could be due to a new relationship being established or an existing one being terminated.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "header", "title": "M1 - MPAN Relationship Principal MPAN (Mandatory)" },
+        { "type": "block", "id": "M1_PrincipalMPAN" },
+        { "type": "header", "title": "B090 - MPAN Relationship Subsidiary MPAN (Conditionally Mandatory)" },
+        { "type": "block", "id": "B090_SubsidiaryMPAN" },
+        { "type": "header", "title": "B091 - Additional Information (Optional)" },
+        { "type": "block", "id": "B091_AdditionalInfo" },
+        { "type": "header", "title": "B036 - Linked Meter Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B036_LinkedMeterDetails" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-046",
+      "name": "Supplier to Registration Service - Related MPAN Relationship Request",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier sends a request to the Registration Service to establish or update a Related MPAN relationship.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "header", "title": "M1 - MPAN Relationship Principal MPAN (Mandatory)" },
+        { "type": "block", "id": "M1_PrincipalMPAN" },
+        { "type": "header", "title": "B090 - MPAN Relationship Subsidiary MPAN (Conditionally Mandatory)" },
+        { "type": "block", "id": "B090_SubsidiaryMPAN" },
+        { "type": "header", "title": "B091 - Additional Information (Optional)" },
+        { "type": "block", "id": "B091_AdditionalInfo" },
+        { "type": "header", "title": "B038 - Related Meter Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B038_RelatedMeterDetails" }
+      ],
+      "rejectionCodeIds": ["REG0000", "REG0007", "REG1021", "REG1050", "REG1051", "REG1059", "REG1060", "REG1061", "REG1062", "REG1063", "REG1064", "REG1065", "REG1067"]
+    },
+    {
+      "id": "IF-047",
+      "name": "Registration Service to Supplier - Related MPAN Relationship Update",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service notifies the Supplier of an update to a Related MPAN relationship. This could be due to a new relationship being established or an existing one being terminated.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "header", "title": "M1 - MPAN Relationship Principal MPAN (Mandatory)" },
+        { "type": "block", "id": "M1_PrincipalMPAN" },
+        { "type": "header", "title": "B090 - MPAN Relationship Subsidiary MPAN (Conditionally Mandatory)" },
+        { "type": "block", "id": "B090_SubsidiaryMPAN" },
+        { "type": "header", "title": "B091 - Additional Information (Optional)" },
+        { "type": "block", "id": "B091_AdditionalInfo" },
+        { "type": "header", "title": "B038 - Related Meter Details (Conditionally Mandatory)" },
+        { "type": "block", "id": "B038_RelatedMeterDetails" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-048",
+      "name": "SDS to MDR - SDS Nominated MDR Update",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Meter Data Retriever (MDR)",
+      "supplier_type": "none",
+      "context": "The SDS notifies the MDR that it has been nominated by the SDS for a particular MPAN.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B018_SDS_Nominated_MDR" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-049",
+      "name": "MDR to SDS - SDS Nominated MDR Update Response",
+      "sender": "Meter Data Retriever (MDR)",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "none",
+      "context": "The MDR confirms that it has received the notification from the SDS regarding its nomination for a particular MPAN.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B099_SDS_MDR_Update_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-050",
+      "name": "SDS to MDR - SDS Assigned MDR Update",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Meter Data Retriever (MDR)",
+      "supplier_type": "none",
+      "context": "The SDS notifies the MDR that it has been assigned by the DCC as the official MDR for a particular MPAN.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B092_SDS_MDR_Update_Outcome" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-051",
+      "name": "MDR to SDS - SDS Assigned MDR Update Response",
+      "sender": "Meter Data Retriever (MDR)",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "none",
+      "context": "The MDR confirms that it has received the notification from the SDS regarding its assignment as the official MDR for a particular MPAN.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B099_SDS_MDR_Update_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-052",
+      "name": "MDR to SDS - Meter Data Retrieval",
+      "sender": "Meter Data Retriever (MDR)",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "none",
+      "context": "MDR Provide Meter Reading(s) to SDS",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "header", "title": "S1 - Sender Info (Mandatory)" },
+        { "type": "header", "title": "D0- Transactional Info - DIP Set (Added by DIP - Mandatory)" },
+        { "type": "header", "title": "A0 - Addressing (Required - Primary Routing)" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "Mandatory to provide (as a minimum) either a B076 Block or B065 Block where Event Type is [ReadingRemote]" },
+        { "type": "header", "title": "B076 Block Below Repeated for each Meter(s) associated with the MPAN" },
+        { "type": "block", "id": "B076_MDR_CumulativeReading", "titleOverride": "* B076 - MDR Cumulative Reading Information (Conditionally Mandatory for [ReadingRemote])" },
+        { "type": "header", "title": "B065 Block Below Repeated for each set of Configured Register(s) for each Meter" },
+        { "type": "block", "id": "B065_ConfigurableReading", "titleOverride": "* B065 - Meter Configurable Register Reading (Conditionally Mandatory for [ReadingRemote])" },
+        { "type": "header", "title": "Conditionally Mandatory to provide a B083, B084 or B077 Block with Event Type [ReadingOnDemand]" },
+        { "type": "header", "title": "B083 Block Below" },
+        { "type": "block", "id": "B083_MDR_End_Date", "titleOverride": "* B083 - MDR End Date (Conditionally Mandatory for [ReadingOnDemand])" },
+        { "type": "header", "title": "B084 Block Below Repeated for each Settlement Period(s) requested for each Meter" },
+        { "type": "block", "id": "B084_MDR_Consumption", "titleOverride": "* B084 - MDR Settlement Period Consumption Data (Conditionally Mandatory for [ReadingOnDemand])" },
+        { "type": "header", "title": "B077 Block Below" },
+        { "type": "block", "id": "B077_MDR_RequestDate", "titleOverride": "* B077- MDR Request Reference Date (Conditionally Mandatory for [ReadingOnDemand])" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-053",
+      "name": "SDS to MDR - Meter Data Retrieval Acknowledgement",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Meter Data Retriever (MDR)",
+      "supplier_type": "none",
+      "context": "The SDS acknowledges the receipt of Meter Reading(s) from the MDR.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-054",
+      "name": "DCC to SDS - DCC MDR Outcome",
+      "sender": "Data Communications Company (DCC)",
+      "receiver": "Smart Data Service (SDS)",
+      "supplier_type": "none",
+      "context": "The DCC provides an outcome from a previous MDR Appointment/De-Appointment request that the SDS submitted to them.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "B066_DCC_MDR_Outcome" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-055",
+      "name": "SDS to DCC - DCC MDR Outcome Acknowledgment",
+      "sender": "Smart Data Service (SDS)",
+      "receiver": "Data Communications Company (DCC)",
+      "supplier_type": "none",
+      "context": "The SDS acknowledges the receipt of the DCC MDR Outcome from the DCC.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-056",
+      "name": "Registration Service to Supplier - Customer Direct Contract Update Notification",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service provides the Supplier with updated information about a Customer Direct Contract for an MPAN they are responsible for.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B020 - Customer Direct Contract MS Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B020_CDC_MS_Info" },
+        { "type": "header", "title": "B021 - Customer Direct Contract DS Info (Conditionally Mandatory)" },
+        { "type": "block", "id": "B021_CDC_DS_Info" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-057",
+      "name": "Supplier to Registration Service - Customer Direct Contract Update Acknowledgement",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier acknowledges the receipt of updated Customer Direct Contract information from the Registration Service.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-058",
+      "name": "Supplier to MDR - Meter Reading Request",
+      "sender": "Supplier",
+      "receiver": "Meter Data Retriever (MDR)",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier requests a Meter Reading(s) from a particular MDR for a particular Meter. This could be for a specific date or a series of dates.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "header", "title": "M0 - MPAN (Mandatory)" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "Mandatory to provide either a B064 Block or B065 Block" },
+        { "type": "block", "id": "B064_CumulativeReading", "titleOverride": "* B064 - Cumulative Reading Information (Conditionally Mandatory)" },
+        { "type": "block", "id": "B065_ConfigurableReading", "titleOverride": "* B065 - Configurable Reading Information (Conditionally Mandatory)" },
+        { "type": "header", "title": "Conditionally Mandatory to provide a B083, B084 or B077 Block with Event Type [ReadingOnDemand]" },
+        { "type": "header", "title": "B083 Block Below" },
+        { "type": "block", "id": "B083_MDR_End_Date", "titleOverride": "* B083 - MDR End Date (Conditionally Mandatory for [ReadingOnDemand])" },
+        { "type": "header", "title": "B084 Block Below Repeated for each Settlement Period(s) requested for each Meter" },
+        { "type": "block", "id": "B084_MDR_Consumption", "titleOverride": "* B084 - MDR Settlement Period Consumption Data (Conditionally Mandatory for [ReadingOnDemand])" },
+        { "type": "header", "title": "B077 Block Below" },
+        { "type": "block", "id": "B077_MDR_RequestDate", "titleOverride": "* B077- MDR Request Reference Date (Conditionally Mandatory for [ReadingOnDemand])" }
+      ],
+      "rejectionCodeIds": ["REG0000"]
+    },
+    {
+      "id": "IF-059",
+      "name": "MDR to Supplier - Meter Reading Request Acknowledgment",
+      "sender": "Meter Data Retriever (MDR)",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The MDR acknowledges the receipt of a Meter Reading(s) request from the Supplier.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-060",
+      "name": "Registration Service to Supplier - Assumed Annual Consumption Update",
+      "sender": "Registration Service",
+      "receiver": "Supplier",
+      "supplier_type": "supplier_receive",
+      "context": "The Registration Service provides the Supplier with updated Assumed Annual Consumption data for an MPAN they are responsible for.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "header", "title": "B059 - Assumed Annual Consumption (Mandatory)" },
+        { "type": "block", "id": "B059_AAC" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-061",
+      "name": "Supplier to Registration Service - Assumed Annual Consumption Update Acknowledgement",
+      "sender": "Supplier",
+      "receiver": "Registration Service",
+      "supplier_type": "supplier_send",
+      "context": "The Supplier acknowledges the receipt of updated Assumed Annual Consumption data from the Registration Service.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "M0_MPAN" },
+        { "type": "block", "id": "R0_Response" }
+      ],
+      "rejectionCodeIds": []
+    },
+    {
+      "id": "IF-062",
+      "name": "Registration Service to Publications Service - Publication of Standing Data",
+      "sender": "Registration Service",
+      "receiver": "Publications Service",
+      "supplier_type": "none",
+      "context": "The Registration Service sends updated industry standing data to the Publications Service. This data is then made available to all market participants.",
+      "composition": [
+        { "type": "block", "id": "S0_TransactionalInfo" },
+        { "type": "block", "id": "P01_PublicationInfo" },
+        { "type": "block", "id": "P02_DistributionVariant" }
+      ],
+      "rejectionCodeIds": []
+    }
+  ]
+}
