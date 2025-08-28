@@ -222,8 +222,7 @@
 
         const DOMElements = {};
         
-        // --- FIX 1: Defined 'enhancedDataItems' as an empty object ---
-        // This prevents a ReferenceError in the fetchData function if it's not defined elsewhere.
+        // This is defined as an empty object to prevent a ReferenceError in the fetchData function.
         const enhancedDataItems = {};
 
         document.addEventListener('DOMContentLoaded', initApp);
@@ -271,8 +270,6 @@
                 console.warn('Could not save user data:', e);
             }
         }
-        
-        // --- FIX 2: Removed the stray closing brace and semicolon '};' that was here ---
 
         async function fetchData() {
             try {
@@ -1179,9 +1176,13 @@
             const name = dataItem.name.toLowerCase();
             const rule = (dataItem.rule || '').toLowerCase();
             
-            // Date/DateTime detection
-            if (name.includes('date') || name.includes('time') || rule.includes('date') || rule.includes('time')) {
-                if (name.includes('time') || rule.includes('time')) {
+            // Use regex to find "date" or "time" as whole words.
+            // This prevents false positives from words like "update" or "validate".
+            const isDateRelated = /\bdate\b/.test(name) || /\bdate\b/.test(rule);
+            const isTimeRelated = /\btime\b/.test(name) || /\btime\b/.test(rule);
+
+            if (isDateRelated || isTimeRelated) {
+                if (isTimeRelated) {
                     return 'datetime';
                 }
                 return 'date';
