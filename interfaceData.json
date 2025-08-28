@@ -206,7 +206,6 @@
     "DI-992": { "name": "Schema Version", "cmo": "M", "rule": "The Scheme Version against which the message has been constructed", "example": "1.0.0" },
     "DI-999": { "name": "Event Code", "cmo": "M", "rule": "Code used to identify the nature of the Event" }
   },
-  {
   "dataBlocksCatalogue": {
     "S0_TransactionalInfo": { "title": "S0- Transactional Info (Mandatory)", "items": ["DI-000", "DI-992", "DI-999"] },
     "M0_MPAN": { "title": "M0 - MPAN (Mandatory)", "items": ["DI-063", "DI-108", "DI-037"] },
@@ -300,9 +299,7 @@
     "B084_MDR_Consumption": { "title": "B084 - MDR Settlement Period Consumption Data (Mandatory)", "items": ["DI-082", "DI-147", "DI-083"] },
     "B076_MDR_CumulativeReading": { "title": "B076 - MDR Cumulative Reading Information", "items": ["DI-056", "DI-088", "DI-089"] },
     "B077_MDR_RequestDate": { "title": "B077- MDR Request Reference Date", "items": ["DI-196"] }
-  }
 },
-{
   "rejectionCodesCatalogue": {
     "REG0000": {
       "description": "MPAN Invalid or does not exist.",
@@ -1335,7 +1332,6 @@
       "resolution": "The submission was rejected for an unspecified reason. Please review the entire submission for compliance with business rules and data standards."
     }
   },
-  {
   "interfaces": [
     {
       "id": "IF-001/PUB-001",
