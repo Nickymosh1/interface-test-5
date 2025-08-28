@@ -1,0 +1,9 @@
+{
+  "IF-001": {
+    "name": "Supplier Registration Service Events",
+    "events": [
+      "[ChangeOfSupplier]",
+      "[InitialRegistration]"
+    ]
+  }
+}
