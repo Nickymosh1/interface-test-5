@@ -15,242 +15,1579 @@
         }
         .gradient-bg { background: linear-gradient(135deg, var(--birch) 0%, #f0e9e6 100%); }
         .glass { backdrop-filter: blur(16px) saturate(180%); background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .btn-primary { background-color: var(--eon-red); color: var(--white); transition: background-color 0.3s; }
-        .btn-primary:hover { background-color: #e0401f; }
-        .favorite-btn.favorited svg { fill: var(--data-sun); stroke: var(--data-sun); }
-        .modal-content { animation: slide-up 0.3s ease-out; }
-        @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        .float-animation { animation: float 6s ease-in-out infinite; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--eon-red), var(--purple)); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        
+        .filter-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .filter-btn.active-filter { transform: translateY(-2px) scale(1.02); }
+        .filter-btn[data-filter="all"].active-filter { background: linear-gradient(135deg, var(--eon-red), #ff6b4a) !important; color: var(--white) !important; box-shadow: 0 8px 25px rgba(229, 0, 0, 0.3); }
+        .filter-btn[data-filter="supplier_send"].active-filter { background: linear-gradient(135deg, var(--data-gas-off), #a66eff) !important; color: var(--white) !important; box-shadow: 0 8px 25px rgba(122, 70, 212, 0.3); }
+        .filter-btn[data-filter="supplier_receive"].active-filter { background: linear-gradient(135deg, var(--data-sun), #ffe533) !important; color: var(--dark-purple) !important; box-shadow: 0 8px 25px rgba(217, 189, 0, 0.3); }
+        .filter-btn[data-filter="none"].active-filter { background: linear-gradient(135deg, var(--dark-purple), var(--purple)) !important; color: var(--white) !important; box-shadow: 0 8px 25px rgba(23, 9, 32, 0.3); }
+        
+        .interface-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-left-width: 4px; position: relative; }
+        .interface-card:hover { transform: translateX(4px) scale(1.02); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); }
+        .interface-card.favorite::after { content: '★'; position: absolute; top: 8px; right: 8px; color: var(--data-sun); font-size: 16px; }
+        
+        .border-send { border-color: var(--data-gas-off); }
+        .border-receive { border-color: var(--data-sun); }
+        .border-both { border-color: var(--data-leaf); }
+        .border-none { border-color: #9ca3af; }
+        
+        .hero-text { background: linear-gradient(135deg, var(--eon-red), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .details-fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .search-input { background: var(--birch); transition: all 0.3s ease; }
+        .search-input:focus { background: var(--white); transform: scale(1.01); box-shadow: 0 4px 15px rgba(255, 72, 34, 0.1); }
+        
+        .highlight { background-color: yellow; font-weight: bold; padding: 1px 2px; border-radius: 2px; }
+        
+        .advanced-filter-panel { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease; }
+        .advanced-filter-panel.expanded { max-height: 500px; opacity: 1; }
+        
+        .rejection-code-card { transition: all 0.2s ease; }
+        .rejection-code-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .loading { animation: pulse 1.5s ease-in-out infinite; }
     </style>
 </head>
-<body class="gradient-bg text-gray-800">
-    <div class="container mx-auto p-4 md:p-6 lg:p-8">
-        <header class="mb-6 text-center">
-            <h1 class="text-4xl font-bold text-gray-900">MHHS Interface Explorer</h1>
-            <p class="text-lg text-gray-600 mt-2">Search, filter, and explore MHHS interface data items.</p>
+<body class="gradient-bg text-[var(--dark-purple)] min-h-screen">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8 md:mb-12">
+            <div class="float-animation inline-block">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold hero-text mb-3">MHHS Interface Explorer</h1>
+            </div>
+            <p class="text-base md:text-lg text-[var(--purple)] opacity-80 max-w-2xl mx-auto leading-relaxed">
+                Enhanced with smart search, advanced filters, and rejection code lookup.
+            </p>
         </header>
 
-        <!-- Search and Filter Controls -->
-        <div class="mb-6 p-4 rounded-lg shadow-md glass">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input type="text" id="searchInput" placeholder="Search by name, ID, or description..." class="md:col-span-2 p-2 border rounded-md focus:ring-2 focus:ring-eon-red focus:outline-none">
-                <div class="flex space-x-2">
-                    <button id="filterBtn" class="w-full bg-white p-2 border rounded-md hover:bg-gray-100">Filters</button>
-                    <button id="exportBtn" class="w-full bg-white p-2 border rounded-md hover:bg-gray-100">Export</button>
+        <div class="flex flex-col lg:flex-row gap-6 md:gap-8">
+            <aside class="lg:w-1/3 xl:w-1/4 glass p-5 md:p-6 rounded-3xl shadow-2xl flex flex-col lg:sticky lg:top-8 lg:self-start">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 id="filter-heading" class="text-xl font-bold text-[var(--eon-red)] flex-shrink-0">Find an Interface</h2>
+                    <div class="flex gap-2">
+                        <button id="rejectionCodesBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Rejection Codes Lookup">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </button>
+                        <button id="fillFormBtn" class="text-[var(--purple)] hover:text-[var(--eon-red)] transition-colors p-2 rounded-lg hover:bg-white/50" title="Fill Interface Form" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Table Display Area -->
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Length</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="interfaceTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Rows will be dynamically inserted here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+                <!-- Enhanced Search -->
+                <div class="mb-5 flex-shrink-0">
+                    <div class="relative">
+                        <input type="search" id="searchInput" placeholder="Smart search: try typos, partial matches..." class="search-input w-full px-4 py-3 border-0 rounded-xl focus:ring-2 focus:ring-[var(--eon-red)] transition placeholder:text-[var(--purple)] placeholder:opacity-60 text-sm md:text-base pr-10">
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[var(--purple)] opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                    </div>
+                    <div id="searchSuggestions" class="mt-2 bg-white rounded-xl shadow-lg border border-gray-200 max-h-40 overflow-y-auto hidden"></div>
+                </div>
 
-    <!-- Details Modal -->
-    <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-start">
-                    <h2 id="modalTitle" class="text-2xl font-bold"></h2>
-                    <button onclick="closeModal('detailsModal')" class="text-gray-500 hover:text-gray-800">&times;</button>
+                <!-- Basic Filters -->
+                <div role="group" aria-labelledby="filter-heading" class="flex flex-wrap gap-2 mb-3 flex-shrink-0">
+                    <button class="filter-btn border-0 text-[var(--purple)] bg-[var(--birch)] px-3 py-1.5 rounded-lg text-xs font-medium shadow-md" data-filter="all" aria-pressed="true">All Interfaces</button>
+                    <button class="filter-btn border-0 text-[var(--purple)] px-3 py-1.5 rounded-lg text-xs font-medium shadow-md" data-filter="supplier_send" aria-pressed="false" style="background: linear-gradient(135deg, #9254FF20, #9254FF10);">Supplier Send</button>
+                    <button class="filter-btn border-0 text-[var(--dark-purple)] px-3 py-1.5 rounded-lg text-xs font-medium shadow-md" data-filter="supplier_receive" aria-pressed="false" style="background: linear-gradient(135deg, #FFDE0030, #FFDE0020);">Supplier Receive</button>
+                    <button class="filter-btn border-0 text-[var(--purple)] px-3 py-1.5 rounded-lg text-xs font-medium shadow-md" data-filter="none" aria-pressed="false" style="background: linear-gradient(135deg, #e5e7eb, #f3f4f6);">Not Involved</button>
                 </div>
-                <div id="modalBody" class="mt-4 prose max-w-none"></div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Filter Modal -->
-    <div id="filterModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
-         <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md">
-            <div class="p-6">
-                <h2 class="text-xl font-bold mb-4">Advanced Filters</h2>
-                <!-- Filter options will be added here -->
-                <div class="mt-6 flex justify-end space-x-2">
-                    <button onclick="applyModalFilters()" class="btn-primary px-4 py-2 rounded-md">Apply</button>
-                    <button onclick="closeModal('filterModal')" class="bg-gray-200 px-4 py-2 rounded-md">Cancel</button>
+                <!-- Advanced Filters Toggle -->
+                <button id="advancedToggle" class="w-full text-left text-xs text-[var(--purple)] hover:text-[var(--eon-red)] mb-2 flex items-center justify-between transition-colors">
+                    <span>Advanced Filters</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                <!-- Advanced Filters Panel -->
+                <div id="advancedFilters" class="advanced-filter-panel mb-3">
+                    <div class="space-y-3 p-3 bg-white/30 rounded-xl">
+                        <div>
+                            <label class="block text-xs font-medium text-[var(--purple)] mb-1">Sender</label>
+                            <select id="senderFilter" class="w-full text-xs p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                                <option value="">Any Sender</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-[var(--purple)] mb-1">Receiver</label>
+                            <select id="receiverFilter" class="w-full text-xs p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                                <option value="">Any Receiver</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-[var(--purple)] mb-1">Data Items Count</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="minDataItems" placeholder="Min" class="w-1/2 text-xs p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                                <input type="number" id="maxDataItems" placeholder="Max" class="w-1/2 text-xs p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="hasRejectionCodes" class="mr-2">
+                            <label for="hasRejectionCodes" class="text-xs text-[var(--purple)]">Has Rejection Codes</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="favoritesOnly" class="mr-2">
+                            <label for="favoritesOnly" class="text-xs text-[var(--purple)]">Favorites Only</label>
+                        </div>
+                        <button id="clearFilters" class="w-full text-xs bg-gray-100 hover:bg-gray-200 p-2 rounded-lg transition-colors">Clear All Filters</button>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Export Modal -->
-    <div id="exportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-sm">
-            <div class="p-6">
-                <h2 class="text-xl font-bold mb-4">Export Data</h2>
-                <p class="mb-4">Select the format to export the current view.</p>
-                <div class="space-y-2">
-                    <button onclick="exportData('csv')" class="w-full text-left bg-gray-100 p-2 rounded-md hover:bg-gray-200">CSV</button>
-                    <button onclick="exportData('json')" class="w-full text-left bg-gray-100 p-2 rounded-md hover:bg-gray-200">JSON</button>
+
+                <!-- Recently Viewed -->
+                <div id="recentlyViewed" class="mb-4 flex-shrink-0">
+                    <h3 class="text-sm font-medium text-[var(--purple)] mb-2">Recently Viewed</h3>
+                    <div id="recentList" class="space-y-1"></div>
                 </div>
-                <div class="mt-6 flex justify-end">
-                    <button onclick="closeModal('exportModal')" class="bg-gray-200 px-4 py-2 rounded-md">Cancel</button>
+
+                <!-- Interface List -->
+                <div id="interfaceList" class="overflow-y-auto flex-1 pr-2 lg:max-h-[calc(100vh-35rem)]" role="region" aria-live="polite" aria-atomic="true"></div>
+            </aside>
+
+            <main id="detailsPanel" class="lg:w-2/3 xl:w-3/4 bg-white/80 p-5 md:p-8 rounded-3xl shadow-2xl relative" role="main" aria-live="polite">
+                <!-- Rejection Codes Panel -->
+                <div id="rejectionCodesPanel" class="hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-[var(--eon-red)]">Rejection Codes Lookup</h2>
+                        <button id="closeRejectionCodes" class="text-[var(--purple)] hover:text-[var(--eon-red)] p-2 rounded-lg hover:bg-white/50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <input type="search" id="rejectionCodeSearch" placeholder="Search rejection codes by ID, description, or keyword..." class="search-input w-full px-4 py-3 border-0 rounded-xl focus:ring-2 focus:ring-[var(--eon-red)] transition placeholder:text-[var(--purple)] placeholder:opacity-60 text-sm md:text-base">
+                    </div>
+                    
+                    <div id="rejectionCodesList" class="space-y-4 max-h-96 overflow-y-auto"></div>
                 </div>
-            </div>
+
+                <!-- Interface Form Builder Panel -->
+                <div id="formBuilderPanel" class="hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-[var(--eon-red)]">Interface Form Builder</h2>
+                            <p id="formInterfaceName" class="text-sm text-[var(--purple)] opacity-80 mt-1"></p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="exportFormBtn" class="px-4 py-2 bg-[var(--data-leaf)] text-white rounded-lg text-sm hover:opacity-90 transition-opacity">
+                                Export JSON
+                            </button>
+                            <button id="closeFormBuilder" class="text-[var(--purple)] hover:text-[var(--eon-red)] p-2 rounded-lg hover:bg-white/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[var(--birch)] rounded-xl">
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--purple)] mb-2">Sender Information</label>
+                                <input type="text" id="senderName" placeholder="Sender Name" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] mb-2">
+                                <input type="text" id="senderContact" placeholder="Contact Info" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--purple)] mb-2">Receiver Information</label>
+                                <input type="text" id="receiverName" placeholder="Receiver Name" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] mb-2">
+                                <input type="text" id="receiverContact" placeholder="Contact Info" class="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)]">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="formContent" class="space-y-6 max-h-96 overflow-y-auto"></div>
+                </div>
+
+                <!-- Welcome Message -->
+                <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full text-center py-16">
+                    <div class="hero-text mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 md:w-24 md:h-24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3 hero-text">Enhanced Interface Explorer</h2>
+                    <p class="text-base md:text-lg text-[var(--purple)] opacity-80 max-w-md leading-relaxed">
+                        Select an interface to explore, or use the rejection codes lookup for quick reference.
+                    </p>
+                </div>
+
+                <!-- Interface Details -->
+                <div id="detailsContent" class="hidden"></div>
+            </main>
         </div>
     </div>
 
     <script>
-        // --- State Management ---
+        // Enhanced state management
         const state = {
-            interfaces: [],
-            filteredInterfaces: [],
-            favorites: new Set(JSON.parse(localStorage.getItem('favorites') || '[]')),
-            currentFilter: 'all',
-            currentSearchTerm: '',
-            advancedFilters: {}
+            interfaces: [], dataItemsCatalogue: {}, dataBlocksCatalogue: {}, rejectionCodesCatalogue: {},
+            filteredInterfaces: [], currentFilter: 'all', currentSearchTerm: '', advancedFilters: {},
+            favorites: new Set(), recentlyViewed: [], searchCache: new Map(), currentInterfaceId: null
         };
 
-        // --- Data Fetching and Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchInterfaces();
-            setupEventListeners();
-        });
+        const DOMElements = {};
 
-        async function fetchInterfaces() {
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        async function initApp() {
+            cacheDOMElements();
+            loadUserData();
+            const success = await fetchData();
+            if (!success) return;
+            setupEventListeners();
+            setupAdvancedFilters();
+            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active-filter');
+            filterAndRender();
+        }
+
+        function cacheDOMElements() {
+            const ids = ['searchInput', 'searchSuggestions', 'interfaceList', 'welcomeMessage', 'detailsContent',
+                         'advancedToggle', 'advancedFilters', 'senderFilter', 'receiverFilter', 'minDataItems', 'maxDataItems',
+                         'hasRejectionCodes', 'favoritesOnly', 'clearFilters', 'recentList', 'fillFormBtn',
+                         'rejectionCodesBtn', 'rejectionCodesPanel', 'closeRejectionCodes', 'rejectionCodeSearch',
+                         'rejectionCodesList', 'formBuilderPanel', 'closeFormBuilder', 'formInterfaceName',
+                         'senderName', 'senderContact', 'receiverName', 'receiverContact', 'formContent', 'exportFormBtn'];
+            
+            ids.forEach(id => DOMElements[id] = document.getElementById(id));
+            DOMElements.filterButtons = document.querySelectorAll('.filter-btn');
+        }
+
+        function loadUserData() {
+            try {
+                const savedFavorites = localStorage.getItem('mhhs_favorites');
+                if (savedFavorites) state.favorites = new Set(JSON.parse(savedFavorites));
+                
+                const savedRecent = localStorage.getItem('mhhs_recent');
+                if (savedRecent) state.recentlyViewed = JSON.parse(savedRecent).slice(0, 5);
+            } catch (e) {
+                console.warn('Could not load user data:', e);
+            }
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('mhhs_favorites', JSON.stringify([...state.favorites]));
+                localStorage.setItem('mhhs_recent', JSON.stringify(state.recentlyViewed));
+            } catch (e) {
+                console.warn('Could not save user data:', e);
+            }
+        }
+
+        // Enhanced data catalogue from Excel file
+        const enhancedDataItems = {
+            "DI-015": { name: "Connection Type Indicator", cmo: "M", rule: "A code to indicate the type of connection at the metering point.", example: "W", enumerated: true, enumValues: "- W  Whole Current\n- L  LV with CT\n- H  HV with CT\n- E  EHV with CT\n- U  Unmetered" },
+            "DI-017": { name: "Consent Granularity", cmo: "M", rule: "Describes the granularity of energy settlement data that a customer has deemed to have consented to.", example: "H", enumerated: true, enumValues: "- H  HH Consent Granted\n- D  Daily Reads Only\n- M  Monthly Reads Only\n- N No Consent" },
+            "DI-025": { name: "DCC Service Flag", cmo: "M", rule: "A DCC provided flag to indicate the status of the services being provided by the DCC to a Metering Point.", example: "A", enumerated: true, enumValues: "- A  Active\n- I  Installed Not Commissioned\n- N  Non-Active" },
+            "DI-030": { name: "Domestic Premise Indicator", cmo: "M", rule: "A flag that indicates if the MPAN of the registration appointment is used to identify a domestic premise.", example: "T", enumerated: true, enumValues: "- T  True (Domestic)\n- F  False (Non-Domestic)" },
+            "DI-033": { name: "Energisation Status", cmo: "M", rule: "Indicates if the metering point is considered energised (i.e. connected to the distribution system) and therefore active for settlement purposes.", example: "D", enumerated: true, enumValues: "- D  De-Energised\n- E  Energised" },
+            "DI-035": { name: "Energy Direction", cmo: "M", rule: "Indicates the direction of energy at a metering point. Values can be I = import / E = export.", example: "I", enumerated: true, enumValues: "- I  Import\n- E  Export" },
+            "DI-037": { name: "GSP Group ID", cmo: "M", rule: "Identifies the distinct grid supply point group (physical region of the country) where the metering point is located.", example: "_K", enumerated: true, enumValues: "_A, _B, _C, _D, _E, _F, _G, _H, _J, _K, _L, _M, _N, _P" },
+            "DI-050": { name: "Market Segment Indicator", cmo: "M", rule: "An enumeration of Smart/Advanced/Unmetered.", example: "S", enumerated: true, enumValues: "- U  Unmetered\n- S  Smart including Traditional\n- A  Advanced" },
+            "DI-052": { name: "Measurement Quantity ID", cmo: "M", rule: "Identifies the type of the quantity that is measured by the UTC Period Consumption Value.", example: "AI", enumerated: true, enumValues: "- AI  Active Import\n- AE  Active Export\n- RI  Reactive Import\n- RE  Reactive Export" },
+            "DI-076": { name: "Estimation Reason Code {e}", cmo: "C", rule: "Reason why Data Service had to provide Estimated/Zero Data", example: "4", enumerated: true, enumValues: "1=Opt Out\n2=Missing\n3=Invalid\n4=Comms Fault\n5=LTV\n6=Disabled\n7=De-Energised\n8=Disconnected\n9=Consumption Amendment\n10=Non-Smart" },
+            "DI-083": { name: "Settlement Period Quality Indicator {q}", cmo: "M", rule: "Describes if the UTC Period Consumption Value is an actual or what estimation method was used to estimate it.", example: "A", enumerated: true, enumValues: "A = Actual\nE = Estimate (UMS Only)\nA1,A2,A3,AAE1,AAE2,AAE3,EAE1,EAE2,EAE3 (ADV Only)\nE0 --> E9 = Estimation Method 1 - 9\nEA1-->EA13 = ADS Estimation Methods\nZE = De-Energised (for use with Unmetered Supplies only)\nZE1--> ZE3 = Zero Estimation Method 1 -3" },
+            "DI-090": { name: "Meter Location", cmo: "M", rule: "The actual location of the metering system within the site", example: "A", enumerated: true, enumValues: "- A  Attic\n- B  Bedroom\n- C  Cellar/Basement\n- D  Other not specified\n- E  Indoors\n- F  Not known\n- G  Garage/Greenhouse\n- H  Hall\n- I  Cupboard\n- J  Intake\n- K  Kitchen\n- L  Landing\n- M  Sub Station\n- N  TC Chamber\n- O  Outbuilding Barn\n- P  Pole\n- R  Ladder required\n- S  Understairs\n- T  Toilet\n- U  Upstairs\n- V  Vestry\n- W  Under Window\n- X  Outside Box\n- Y  O/S Box with restricted access\n- Z  Communal Cupboard" },
+            "DI-094": { name: "Reading Method", cmo: "M", rule: "Indicates how the Cumulative meter reading was obtained/derived", example: "P", enumerated: true, enumValues: "- A  Actual Data Recovered from Meter\n- C  Customer\n- E  Estimate by SDS\n- S  Estimate by Supplier\n- X  Derived Reading (Based on Actual)\n- Y  Derived Reading (Based on Estimate)" },
+            "DI-130": { name: "RMP Status (Registration)", cmo: "M", rule: "The MPAN RMP Status as held in the Registration Service", example: "O", enumerated: true, enumValues: "C = Created\nO = Operational\nT = Terminated" },
+            "DI-131": { name: "MP Status", cmo: "M", rule: "The MP or Trading Status as held in the Registration Service", example: "T", enumerated: true, enumValues: "N = New\nR = Registered\nT = Traded\nX = Disconnected" },
+            "DI-137": { name: "IHD Install Status", cmo: "M", rule: "Information regarding the In Home Display at a metering point.", example: "I", enumerated: true, enumValues: "- I  Installed\n- D  Declined\n- E  Existing\n- F  Failed" }
+        };
+
+        async function fetchData() {
             try {
                 const response = await fetch('interfaceData.json');
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                state.interfaces = data;
-                applyFilters();
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const fetchedData = await response.json();
+                
+                // Merge enhanced data items with existing catalogue
+                const mergedCatalogue = { ...fetchedData.dataItemsCatalogue };
+                Object.keys(enhancedDataItems).forEach(key => {
+                    if (mergedCatalogue[key]) {
+                        // Enhance existing items with enumerated values
+                        mergedCatalogue[key] = { ...mergedCatalogue[key], ...enhancedDataItems[key] };
+                        // Use enumValues as populationNotes for backward compatibility
+                        if (enhancedDataItems[key].enumValues) {
+                            mergedCatalogue[key].populationNotes = enhancedDataItems[key].enumValues;
+                        }
+                    } else {
+                        // Add new items
+                        mergedCatalogue[key] = enhancedDataItems[key];
+                        if (enhancedDataItems[key].enumValues) {
+                            mergedCatalogue[key].populationNotes = enhancedDataItems[key].enumValues;
+                        }
+                    }
+                });
+                
+                Object.assign(state, {
+                    interfaces: fetchedData.interfaces || [],
+                    dataItemsCatalogue: mergedCatalogue,
+                    dataBlocksCatalogue: fetchedData.dataBlocksCatalogue || {},
+                    rejectionCodesCatalogue: fetchedData.rejectionCodesCatalogue || {},
+                    filteredInterfaces: fetchedData.interfaces || [],
+                });
+                return true;
             } catch (error) {
-                console.error("Could not fetch interface data:", error);
-                document.getElementById('interfaceTableBody').innerHTML = `<tr><td colspan="6" class="text-center p-4">Error loading data.</td></tr>`;
+                console.error("Could not load interface data:", error);
+                DOMElements.interfaceList.innerHTML = `<p class="text-center text-red-600 p-4">Error: Could not load data.</p>`;
+                return false;
             }
         }
 
         function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', handleSearch);
-            document.getElementById('filterBtn').addEventListener('click', () => openModal('filterModal'));
-            document.getElementById('exportBtn').addEventListener('click', () => openModal('exportModal'));
+            // Enhanced search with suggestions
+            let debounceTimer;
+            DOMElements.searchInput.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    state.currentSearchTerm = e.target.value;
+                    updateSearchSuggestions();
+                    filterAndRender();
+                }, 200);
+            });
+
+            // Search suggestions
+            DOMElements.searchInput.addEventListener('focus', updateSearchSuggestions);
+            DOMElements.searchInput.addEventListener('blur', () => {
+                setTimeout(() => DOMElements.searchSuggestions.classList.add('hidden'), 200);
+            });
+
+            // Filter buttons
+            DOMElements.filterButtons.forEach(button =>
+                button.addEventListener('click', () => handleFilterClick(button))
+            );
+
+            // Advanced filters
+            DOMElements.advancedToggle.addEventListener('click', toggleAdvancedFilters);
+            ['senderFilter', 'receiverFilter', 'minDataItems', 'maxDataItems', 'hasRejectionCodes', 'favoritesOnly'].forEach(id => {
+                DOMElements[id].addEventListener('change', handleAdvancedFilterChange);
+                DOMElements[id].addEventListener('input', handleAdvancedFilterChange);
+            });
+            DOMElements.clearFilters.addEventListener('click', clearAllFilters);
+
+            // Interface selection
+            DOMElements.interfaceList.addEventListener('click', handleInterfaceClick);
+            DOMElements.interfaceList.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleInterfaceClick(e);
+                }
+            });
+
+            // Toolbar actions
+            DOMElements.rejectionCodesBtn.addEventListener('click', showRejectionCodes);
+            DOMElements.fillFormBtn.addEventListener('click', showFormBuilder);
+
+            // Modal/panel controls
+            DOMElements.closeRejectionCodes.addEventListener('click', hideRejectionCodes);
+            DOMElements.closeFormBuilder.addEventListener('click', hideFormBuilder);
+
+            // Form builder
+            DOMElements.exportFormBtn.addEventListener('click', exportFormData);
+
+            // Search suggestions click
+            DOMElements.searchSuggestions.addEventListener('click', (e) => {
+                if (e.target.dataset.suggestion) {
+                    DOMElements.searchInput.value = e.target.dataset.suggestion;
+                    state.currentSearchTerm = e.target.dataset.suggestion;
+                    DOMElements.searchSuggestions.classList.add('hidden');
+                    filterAndRender();
+                }
+            });
+
+            // Rejection code search
+            DOMElements.rejectionCodeSearch.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    filterRejectionCodes(e.target.value);
+                }, 200);
+            });
         }
 
-        // --- Filtering and Searching ---
-        function applyFilters() {
-            let results = [...state.interfaces];
+        function setupAdvancedFilters() {
+            // Populate sender/receiver dropdowns
+            const senders = [...new Set(state.interfaces.map(i => i.sender))].filter(Boolean).sort();
+            const receivers = [...new Set(state.interfaces.map(i => i.receiver))].filter(Boolean).sort();
+
+            senders.forEach(sender => {
+                const option = document.createElement('option');
+                option.value = sender;
+                option.textContent = sender;
+                DOMElements.senderFilter.appendChild(option);
+            });
+
+            receivers.forEach(receiver => {
+                const option = document.createElement('option');
+                option.value = receiver;
+                option.textContent = receiver;
+                DOMElements.receiverFilter.appendChild(option);
+            });
+        }
+
+        // Fuzzy search implementation
+        function fuzzySearch(query, text, threshold = 0.6) {
+            if (!query || !text) return { matches: false, score: 0 };
             
-            // Search filter
-            const searchTerm = state.currentSearchTerm.toLowerCase();
-            if (searchTerm) {
-                results = results.filter(item =>
-                    item.name.toLowerCase().includes(searchTerm) ||
-                    item.id.toLowerCase().includes(searchTerm) ||
-                    item.description.toLowerCase().includes(searchTerm)
-                );
+            query = query.toLowerCase();
+            text = text.toLowerCase();
+            
+            // Exact match gets highest score
+            if (text.includes(query)) return { matches: true, score: 1 };
+            
+            // Calculate Levenshtein-based similarity
+            const score = calculateSimilarity(query, text);
+            return { matches: score >= threshold, score };
+        }
+
+        function calculateSimilarity(a, b) {
+            const matrix = Array(a.length + 1).fill().map(() => Array(b.length + 1).fill(0));
+            
+            for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+            for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+            
+            for (let i = 1; i <= a.length; i++) {
+                for (let j = 1; j <= b.length; j++) {
+                    const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j - 1] + cost
+                    );
+                }
             }
-
-            // TODO: Add advanced filter logic here
-
-            state.filteredInterfaces = results;
-            renderTable();
+            
+            const maxLen = Math.max(a.length, b.length);
+            return maxLen > 0 ? 1 - (matrix[a.length][b.length] / maxLen) : 1;
         }
 
-        function handleSearch(event) {
-            state.currentSearchTerm = event.target.value;
-            applyFilters();
-        }
-
-        // --- Rendering ---
-        function renderTable() {
-            const tableBody = document.getElementById('interfaceTableBody');
-            if (state.filteredInterfaces.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="text-center p-4">No results found.</td></tr>`;
+        function updateSearchSuggestions() {
+            if (state.currentSearchTerm.length < 2) {
+                DOMElements.searchSuggestions.classList.add('hidden');
                 return;
             }
 
-            tableBody.innerHTML = state.filteredInterfaces.map(item => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${escapeHtml(item.id)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">${escapeHtml(item.name)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${escapeHtml(item.type)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${escapeHtml(item.length)}</td>
-                    <td class="px-6 py-4 text-sm text-gray-500 truncate" style="max-width: 300px;">${escapeHtml(item.description)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="showDetails('${item.id}')" class="text-indigo-600 hover:text-indigo-900">Details</button>
-                        <button onclick="toggleFavorite('${item.id}')" class="favorite-btn ml-4 ${state.favorites.has(item.id) ? 'favorited' : ''}" title="Toggle Favorite">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            const suggestions = generateSearchSuggestions(state.currentSearchTerm);
+            
+            if (suggestions.length === 0) {
+                DOMElements.searchSuggestions.classList.add('hidden');
+                return;
+            }
+
+            const html = suggestions.map(suggestion =>
+                `<div class="p-2 hover:bg-gray-50 cursor-pointer text-sm" data-suggestion="${escapeHtml(suggestion)}">${escapeHtml(suggestion)}</div>`
+            ).join('');
+
+            DOMElements.searchSuggestions.innerHTML = html;
+            DOMElements.searchSuggestions.classList.remove('hidden');
         }
 
-        // --- Modal Logic ---
-        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); document.getElementById(modalId).classList.add('flex'); }
-        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); document.getElementById(modalId).classList.remove('flex'); }
+        function generateSearchSuggestions(query) {
+            const suggestions = new Set();
+            const queryLower = query.toLowerCase();
 
-        function showDetails(itemId) {
-            const item = state.interfaces.find(i => i.id === itemId);
+            state.interfaces.forEach(item => {
+                if (item.name.toLowerCase().includes(queryLower)) suggestions.add(item.name);
+                if (item.id.toLowerCase().includes(queryLower)) suggestions.add(item.id);
+                
+                if (item.composition) {
+                    item.composition.forEach(comp => {
+                        if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
+                            state.dataBlocksCatalogue[comp.id].items.forEach(itemId => {
+                                const dataItem = state.dataItemsCatalogue[itemId];
+                                if (dataItem && dataItem.name.toLowerCase().includes(queryLower)) {
+                                    suggestions.add(dataItem.name);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            return Array.from(suggestions).slice(0, 8).sort();
+        }
+
+        function toggleAdvancedFilters() {
+            const panel = DOMElements.advancedFilters;
+            const icon = DOMElements.advancedToggle.querySelector('svg');
+            
+            if (panel.classList.contains('expanded')) {
+                panel.classList.remove('expanded');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                panel.classList.add('expanded');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function handleAdvancedFilterChange() {
+            state.advancedFilters = {
+                sender: DOMElements.senderFilter.value,
+                receiver: DOMElements.receiverFilter.value,
+                minDataItems: parseInt(DOMElements.minDataItems.value) || 0,
+                maxDataItems: parseInt(DOMElements.maxDataItems.value) || Infinity,
+                hasRejectionCodes: DOMElements.hasRejectionCodes.checked,
+                favoritesOnly: DOMElements.favoritesOnly.checked
+            };
+            filterAndRender();
+        }
+
+        function clearAllFilters() {
+            DOMElements.senderFilter.value = '';
+            DOMElements.receiverFilter.value = '';
+            DOMElements.minDataItems.value = '';
+            DOMElements.maxDataItems.value = '';
+            DOMElements.hasRejectionCodes.checked = false;
+            DOMElements.favoritesOnly.checked = false;
+            DOMElements.searchInput.value = '';
+            state.currentSearchTerm = '';
+            state.advancedFilters = {};
+            filterAndRender();
+        }
+
+        function handleFilterClick(button) {
+            state.currentFilter = button.dataset.filter;
+            DOMElements.filterButtons.forEach(btn => {
+                btn.classList.remove('active-filter');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+            button.classList.add('active-filter');
+            button.setAttribute('aria-pressed', 'true');
+            filterAndRender();
+        }
+
+        function handleInterfaceClick(e) {
+            const element = e.target.closest('[data-id]');
+            if (!element) return;
+            
+            const id = element.dataset.id;
+            
+            // Handle favorites (double-click)
+            if (e.detail === 2) {
+                toggleFavorite(id);
+                return;
+            }
+            
+            // Normal selection
+            renderInterfaceDetails(id);
+            addToRecentlyViewed(id);
+        }
+
+        function toggleFavorite(id) {
+            if (state.favorites.has(id)) {
+                state.favorites.delete(id);
+            } else {
+                state.favorites.add(id);
+            }
+            saveUserData();
+            renderInterfaceList();
+        }
+
+        function addToRecentlyViewed(id) {
+            state.recentlyViewed = state.recentlyViewed.filter(item => item !== id);
+            state.recentlyViewed.unshift(id);
+            state.recentlyViewed = state.recentlyViewed.slice(0, 5);
+            saveUserData();
+            renderRecentlyViewed();
+        }
+
+        function renderRecentlyViewed() {
+            const html = state.recentlyViewed.map(id => {
+                const item = state.interfaces.find(i => i.id === id);
+                if (!item) return '';
+                return `<div class="text-xs p-2 bg-white/50 rounded-lg cursor-pointer hover:bg-white/80 transition-colors" data-id="${id}">${escapeHtml(item.id)}</div>`;
+            }).join('');
+            
+            DOMElements.recentList.innerHTML = html;
+            
+            // Add click handlers
+            DOMElements.recentList.addEventListener('click', (e) => {
+                const element = e.target.closest('[data-id]');
+                if (element) renderInterfaceDetails(element.dataset.id);
+            });
+        }
+
+        function filterAndRender() {
+            const cacheKey = JSON.stringify({
+                filter: state.currentFilter,
+                search: state.currentSearchTerm,
+                advanced: state.advancedFilters
+            });
+
+            if (state.searchCache.has(cacheKey)) {
+                state.filteredInterfaces = state.searchCache.get(cacheKey);
+            } else {
+                const searchTerms = state.currentSearchTerm.toLowerCase().split(' ').filter(term => term.trim() !== '');
+                
+                state.filteredInterfaces = state.interfaces.filter(item => {
+                    // Basic filter
+                    const matchesFilter = state.currentFilter === 'all' ||
+                                        item.supplier_type === state.currentFilter ||
+                                        (state.currentFilter === 'supplier_send' && item.supplier_type === 'supplier_both') ||
+                                        (state.currentFilter === 'supplier_receive' && item.supplier_type === 'supplier_both');
+                    
+                    if (!matchesFilter) return false;
+
+                    // Advanced filters
+                    if (state.advancedFilters.sender && !item.sender?.includes(state.advancedFilters.sender)) return false;
+                    if (state.advancedFilters.receiver && !item.receiver?.includes(state.advancedFilters.receiver)) return false;
+                    if (state.advancedFilters.hasRejectionCodes && (!item.rejectionCodeIds || item.rejectionCodeIds.length === 0)) return false;
+                    if (state.advancedFilters.favoritesOnly && !state.favorites.has(item.id)) return false;
+                    
+                    // Data items count filter
+                    const dataItemsCount = getDataItemsCount(item);
+                    if (dataItemsCount < state.advancedFilters.minDataItems || dataItemsCount > state.advancedFilters.maxDataItems) return false;
+
+                    // Search
+                    if (searchTerms.length === 0) return true;
+                    
+                    const searchableContent = buildSearchableContent(item);
+                    return searchTerms.some(term => {
+                        const fuzzyResult = fuzzySearch(term, searchableContent, 0.3);
+                        return fuzzyResult.matches;
+                    });
+                });
+
+                state.searchCache.set(cacheKey, state.filteredInterfaces);
+                
+                if (state.searchCache.size > 50) {
+                    const firstKey = state.searchCache.keys().next().value;
+                    state.searchCache.delete(firstKey);
+                }
+            }
+
+            renderInterfaceList();
+        }
+
+        function getDataItemsCount(interfaceItem) {
+            if (!interfaceItem.composition) return 0;
+            let count = 0;
+            interfaceItem.composition.forEach(comp => {
+                if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
+                    count += state.dataBlocksCatalogue[comp.id].items.length;
+                } else if (comp.type === 'item') {
+                    count += 1;
+                }
+            });
+            return count;
+        }
+
+        function buildSearchableContent(interfaceItem) {
+            let content = [interfaceItem.id, interfaceItem.name, interfaceItem.description,
+                          interfaceItem.sender, interfaceItem.receiver, interfaceItem.context].join(' ').toLowerCase();
+            
+            if (interfaceItem.composition) {
+                interfaceItem.composition.forEach(comp => {
+                    const items = (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) ?
+                                 state.dataBlocksCatalogue[comp.id].items :
+                                 (comp.type === 'item' ? [comp.id] : []);
+                    
+                    items.forEach(itemId => {
+                        const dataItem = state.dataItemsCatalogue[itemId];
+                        if (dataItem) {
+                            content += ` ${itemId} ${dataItem.name} ${dataItem.rule}`;
+                        }
+                    });
+                });
+            }
+            
+            return content.toLowerCase();
+        }
+
+        function renderInterfaceList() {
+            const { interfaceList } = DOMElements;
+            
+            if (state.filteredInterfaces.length === 0) {
+                interfaceList.innerHTML = `<div class="text-center text-[var(--purple)] opacity-80 p-4 bg-[var(--birch)] rounded-2xl">
+                    <p class="text-base font-medium">No interfaces found</p>
+                    <p class="text-xs opacity-70">Try different search terms or filters</p>
+                </div>`;
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            const typeClasses = {
+                supplier_send: 'border-send',
+                supplier_receive: 'border-receive',
+                supplier_both: 'border-both',
+                none: 'border-none'
+            };
+
+            // Sort by relevance if searching, otherwise by ID
+            const sortedInterfaces = [...state.filteredInterfaces];
+            if (state.currentSearchTerm) {
+                sortedInterfaces.sort((a, b) => {
+                    const aContent = buildSearchableContent(a);
+                    const bContent = buildSearchableContent(b);
+                    const aScore = fuzzySearch(state.currentSearchTerm, aContent).score;
+                    const bScore = fuzzySearch(state.currentSearchTerm, bContent).score;
+                    return bScore - aScore;
+                });
+            }
+
+            sortedInterfaces.forEach(item => {
+                const element = document.createElement('div');
+                const isFavorite = state.favorites.has(item.id);
+                
+                element.className = `interface-card p-3 md:p-4 mb-2 bg-[var(--white)] rounded-xl cursor-pointer shadow-md ${typeClasses[item.supplier_type]} ${isFavorite ? 'favorite' : ''}`;
+                element.dataset.id = item.id;
+                element.setAttribute('role', 'button');
+                element.setAttribute('tabindex', '0');
+                
+                const highlightedName = highlightSearchTerms(item.name, state.currentSearchTerm);
+                const highlightedId = highlightSearchTerms(item.id, state.currentSearchTerm);
+                
+                element.innerHTML = `
+                    <p class="font-bold text-[var(--dark-purple)] pointer-events-none text-sm md:text-base mb-1">${highlightedId}</p>
+                    <p class="text-[var(--purple)] opacity-90 pointer-events-none leading-relaxed text-xs md:text-sm">${highlightedName}</p>
+                `;
+                
+                fragment.appendChild(element);
+            });
+
+            interfaceList.innerHTML = '';
+            interfaceList.appendChild(fragment);
+        }
+
+        function highlightSearchTerms(text, searchTerm) {
+            if (!searchTerm || !text) return escapeHtml(text);
+            
+            const terms = searchTerm.toLowerCase().split(' ').filter(t => t.trim());
+            let highlighted = escapeHtml(text);
+            
+            terms.forEach(term => {
+                const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi');
+                highlighted = highlighted.replace(regex, '<span class="highlight">$1</span>');
+            });
+            
+            return highlighted;
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function renderInterfaceDetails(id) {
+            const item = state.interfaces.find(i => i.id === id);
             if (!item) return;
 
-            document.getElementById('modalTitle').innerText = `${item.name} (${item.id})`;
-            let bodyContent = `
-                <p><strong>Description:</strong> ${escapeHtml(item.description)}</p>
-                <p><strong>Type:</strong> ${escapeHtml(item.type)}</p>
-                <p><strong>Length:</strong> ${escapeHtml(item.length)}</p>
-            `;
-            if (item.example) {
-                bodyContent += `<p><strong>Example:</strong> <code>${escapeHtml(item.example)}</code></p>`;
-            }
-            if (item.enumValues) {
-                bodyContent += `<strong>Allowed Values:</strong><ul>${item.enumValues.map(v => `<li>${escapeHtml(v)}</li>`).join('')}</ul>`;
-            }
-            document.getElementById('modalBody').innerHTML = bodyContent;
-            openModal('detailsModal');
+            state.currentInterfaceId = id;
+            DOMElements.fillFormBtn.disabled = false;
+            
+            hideRejectionCodes();
+            hideFormBuilder();
+            DOMElements.welcomeMessage.classList.add('hidden');
+            DOMElements.detailsContent.classList.remove('hidden');
+            DOMElements.detailsContent.classList.add('details-fade-in');
+            setTimeout(() => DOMElements.detailsContent.classList.remove('details-fade-in'), 500);
+
+            const typeInfo = {
+                supplier_send: { label: 'Supplier Send', classes: 'bg-gradient-to-r from-[var(--data-gas-off)] to-purple-600 text-white' },
+                supplier_receive: { label: 'Supplier Receive', classes: 'bg-gradient-to-r from-[var(--data-sun)] to-yellow-400 text-[var(--dark-purple)]' },
+                supplier_both: { label: 'Supplier Send & Receive', classes: 'bg-gradient-to-r from-[var(--data-leaf)] to-green-400 text-[var(--dark-purple)]' },
+                none: { label: 'Supplier Not Involved', classes: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white' }
+            };
+
+            const isFavorite = state.favorites.has(id);
+            const dataItemsHtml = generateDataItemsHtml(item);
+            const rejectionCodesHtml = generateRejectionCodesHtml(item);
+
+            DOMElements.detailsContent.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-1">
+                            <h2 class="text-2xl lg:text-3xl font-bold text-[var(--dark-purple)] leading-tight" tabindex="-1">${escapeHtml(item.name)}</h2>
+                            <button onclick="toggleFavorite('${id}')" class="text-2xl ${isFavorite ? 'text-[var(--data-sun)]' : 'text-gray-400'} hover:scale-110 transition-transform" title="${isFavorite ? 'Remove from' : 'Add to'} favorites">
+                                ${isFavorite ? '★' : '☆'}
+                            </button>
+                        </div>
+                        <p class="text-base lg:text-lg text-[var(--purple)] opacity-90 font-medium">${escapeHtml(item.id)}</p>
+                    </div>
+                    <span class="text-xs font-semibold px-4 py-2 rounded-full shadow-md ${typeInfo[item.supplier_type].classes} whitespace-nowrap">${escapeHtml(typeInfo[item.supplier_type].label)}</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white/50 p-4 sm:p-5 rounded-2xl shadow-lg border border-gray-100">
+                        <h4 class="font-bold text-[var(--eon-red)] text-xs mb-2 uppercase tracking-wider">FROM</h4>
+                        <p class="font-semibold text-[var(--dark-purple)] text-sm md:text-base leading-relaxed">${escapeHtml(item.sender) || 'N/A'}</p>
+                    </div>
+                    <div class="bg-white/50 p-4 sm:p-5 rounded-2xl shadow-lg border border-gray-100">
+                        <h4 class="font-bold text-[var(--eon-red)] text-xs mb-2 uppercase tracking-wider">TO</h4>
+                        <p class="font-semibold text-[var(--dark-purple)] text-sm md:text-base leading-relaxed">${escapeHtml(item.receiver) || 'N/A'}</p>
+                    </div>
+                </div>
+                <div class="bg-white/50 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
+                    <h3 class="text-xl font-bold text-[var(--eon-red)] mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Context & Purpose
+                    </h3>
+                    <p class="text-[var(--dark-purple)] leading-relaxed text-sm md:text-base">${escapeHtml(item.context || "No context available.")}</p>
+                </div>
+                ${dataItemsHtml}
+                ${rejectionCodesHtml}`;
+            
+            DOMElements.detailsContent.querySelector('h2').focus({ preventScroll: true });
         }
 
-        // --- Actions ---
-        function toggleFavorite(itemId) {
-            if (state.favorites.has(itemId)) {
-                state.favorites.delete(itemId);
-            } else {
-                state.favorites.add(itemId);
-            }
-            localStorage.setItem('favorites', JSON.stringify([...state.favorites]));
-            renderTable(); // Re-render to update the favorite icon
+        function generateDataItemsHtml(interfaceItem) {
+             if (!interfaceItem.composition || interfaceItem.composition.length === 0) return '';
+             const tableContent = interfaceItem.composition.map(comp => {
+                const itemsToRender = (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) ?
+                                    state.dataBlocksCatalogue[comp.id].items :
+                                    (comp.type === 'item' ? [comp.id] : []);
+                let blockHtml = '';
+                if (comp.type === 'header') {
+                    return `<thead class="text-xs text-[var(--dark-purple)] uppercase bg-[var(--birch)]/70 sticky top-0">
+                        <tr class="border-b"><th colspan="6" class="px-4 py-2 font-bold">${escapeHtml(comp.title)}</th></tr>
+                    </thead>`;
+                }
+                if (comp.type === 'block') {
+                     const block = state.dataBlocksCatalogue[comp.id];
+                     if (!block) return '';
+                     blockHtml = `<thead class="text-xs text-[var(--dark-purple)] uppercase bg-[var(--birch)]/70 sticky top-0">
+                         <tr class="border-b"><th colspan="6" class="px-4 py-2 font-bold">${escapeHtml(comp.titleOverride || block.title)}</th></tr>
+                     </thead>
+                     <thead class="text-xs text-[var(--purple)] uppercase bg-[var(--birch)]/70 sticky top-9">
+                         <tr class="border-b">
+                             <th class="px-4 py-2">ID</th><th class="px-4 py-2">Data Item</th><th class="px-4 py-2 whitespace-nowrap">M/O/C</th>
+                             <th class="px-4 py-2 w-1/4">Description / Rule</th><th class="px-4 py-2 w-1/4">Population Notes</th><th class="px-4 py-2">Example</th>
+                         </tr>
+                     </thead>`;
+                }
+                const rowsHtml = itemsToRender.map(itemId => {
+                    const di = state.dataItemsCatalogue[itemId];
+                    if (!di) return '';
+                    const notesHtml = di.populationNotes ? `<p class="text-[var(--purple)] opacity-90">${escapeHtml(di.populationNotes)}</p>` : '';
+                    const exampleHtml = di.example ? `<code class="text-blue-600 bg-blue-50 p-1 rounded-md text-xs">${escapeHtml(di.example)}</code>` : '';
+                    
+                    return `<tr class="hover:bg-gray-50/50">
+                                <td class="px-4 py-3 font-mono font-semibold text-xs align-top">${escapeHtml(itemId)}</td>
+                                <td class="px-4 py-3 align-top">${escapeHtml(di.name)}</td>
+                                <td class="px-4 py-3 font-semibold text-center align-top">${escapeHtml(di.cmo)}</td>
+                                <td class="px-4 py-3 text-xs opacity-80 align-top">${escapeHtml(di.rule)}</td>
+                                <td class="px-4 py-3 text-xs align-top">${notesHtml}</td>
+                                <td class="px-4 py-3 text-xs align-top">${exampleHtml}</td>
+                            </tr>`;
+                }).join('');
+                return blockHtml + `<tbody class="divide-y divide-gray-200/50">${rowsHtml}</tbody>`;
+             }).join('');
+             return `<div class="bg-white/50 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 mt-6 md:mt-8">
+                <h3 class="text-xl font-bold text-[var(--eon-red)] mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                    Data Items
+                </h3>
+                <div class="pr-2">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">${tableContent}</table>
+                    </div>
+                </div>
+             </div>`;
         }
-        
-        function exportData(format) {
-            let data;
-            let filename;
-            let mimeType;
+
+        function generateRejectionCodesHtml(interfaceItem) {
+            if (!interfaceItem.rejectionCodeIds || interfaceItem.rejectionCodeIds.length === 0) return '';
+            const codesHtml = interfaceItem.rejectionCodeIds.map(codeId => {
+                const code = state.rejectionCodesCatalogue[codeId];
+                if (!code) return '';
+                return `
+                    <div class="p-4 bg-red-50/50 border-l-4 border-red-400 rounded-r-lg">
+                        <p class="font-bold font-mono text-base text-red-800">${escapeHtml(codeId)}</p>
+                        <p class="mt-1 text-sm font-semibold text-[var(--dark-purple)]">${escapeHtml(code.description)}</p>
+                        ${code.reason ? `<p class="mt-2 text-xs text-gray-700"><b class="font-medium">Why:</b> ${escapeHtml(code.reason)}</p>` : ''}
+                        ${code.resolution ? `<p class="mt-2 text-xs text-gray-700"><b class="font-medium text-green-900">How to Fix:</b> ${escapeHtml(code.resolution)}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+            return `
+                <div class="bg-white/50 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 mt-6 md:mt-8">
+                    <h3 class="text-xl font-bold text-[var(--eon-red)] mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        Applicable Rejection Codes
+                    </h3>
+                    <div class="space-y-4">${codesHtml}</div>
+                </div>`;
+        }
+
+        // Rejection Codes Functions
+        function showRejectionCodes() {
+            DOMElements.welcomeMessage.classList.add('hidden');
+            DOMElements.detailsContent.classList.add('hidden');
+            DOMElements.rejectionCodesPanel.classList.remove('hidden');
+            renderAllRejectionCodes();
+        }
+
+        function hideRejectionCodes() {
+            DOMElements.rejectionCodesPanel.classList.add('hidden');
+            if (DOMElements.detailsContent.classList.contains('hidden')) {
+                DOMElements.welcomeMessage.classList.remove('hidden');
+            } else {
+                DOMElements.detailsContent.classList.remove('hidden');
+            }
+        }
+
+        function renderAllRejectionCodes() {
+            const codes = Object.entries(state.rejectionCodesCatalogue);
+            renderRejectionCodesList(codes);
+        }
+
+        function filterRejectionCodes(searchTerm) {
+            if (!searchTerm.trim()) {
+                renderAllRejectionCodes();
+                return;
+            }
+
+            const filteredCodes = Object.entries(state.rejectionCodesCatalogue).filter(([codeId, code]) => {
+                const searchable = `${codeId} ${code.description} ${code.reason || ''} ${code.resolution || ''}`.toLowerCase();
+                return searchable.includes(searchTerm.toLowerCase());
+            });
+
+            renderRejectionCodesList(filteredCodes);
+        }
+
+        function renderRejectionCodesList(codes) {
+            if (codes.length === 0) {
+                DOMElements.rejectionCodesList.innerHTML = `
+                    <div class="text-center text-[var(--purple)] opacity-80 p-8">
+                        <p class="text-base font-medium">No rejection codes found</p>
+                        <p class="text-sm opacity-70">Try a different search term</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = codes.map(([codeId, code]) => `
+                <div class="rejection-code-card p-4 bg-white rounded-2xl shadow-lg border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0">
+                            <span class="inline-block px-3 py-1 bg-red-100 text-red-800 font-mono font-bold text-sm rounded-lg">${escapeHtml(codeId)}</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-[var(--dark-purple)] mb-2">${escapeHtml(code.description)}</h3>
+                            ${code.reason ? `<p class="text-sm text-gray-700 mb-2"><span class="font-medium text-red-700">Reason:</span> ${escapeHtml(code.reason)}</p>` : ''}
+                            ${code.resolution ? `<p class="text-sm text-gray-700"><span class="font-medium text-green-700">Resolution:</span> ${escapeHtml(code.resolution)}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            DOMElements.rejectionCodesList.innerHTML = html;
+        }
+
+        // Form Builder Functions
+        function showFormBuilder() {
+            if (!state.currentInterfaceId) return;
             
-            const headers = ['id', 'name', 'type', 'length', 'description', 'example'];
+            DOMElements.welcomeMessage.classList.add('hidden');
+            DOMElements.detailsContent.classList.add('hidden');
+            DOMElements.rejectionCodesPanel.classList.add('hidden');
+            DOMElements.formBuilderPanel.classList.remove('hidden');
+            
+            generateInterfaceForm(state.currentInterfaceId);
+        }
+
+        function hideFormBuilder() {
+            DOMElements.formBuilderPanel.classList.add('hidden');
+            if (DOMElements.detailsContent.classList.contains('hidden')) {
+                DOMElements.welcomeMessage.classList.remove('hidden');
+            } else {
+                DOMElements.detailsContent.classList.remove('hidden');
+            }
+        }
+
+        function generateInterfaceForm(interfaceId) {
+            const item = state.interfaces.find(i => i.id === interfaceId);
+            if (!item) return;
+
+            // Set interface info
+            DOMElements.formInterfaceName.textContent = `${item.id} - ${item.name}`;
+            DOMElements.senderName.value = item.sender || '';
+            DOMElements.receiverName.value = item.receiver || '';
+
+            // Generate form content
+            const formHtml = generateFormHTML(item);
+            DOMElements.formContent.innerHTML = formHtml;
+        }
+
+        function generateFormHTML(interfaceItem) {
+            if (!interfaceItem.composition || interfaceItem.composition.length === 0) {
+                return '<p class="text-center text-[var(--purple)] opacity-80 p-8">No data items to fill for this interface.</p>';
+            }
+
+            return interfaceItem.composition.map(comp => {
+                if (comp.type === 'header') {
+                    return `<div class="bg-[var(--birch)] p-4 rounded-xl">
+                        <h3 class="font-bold text-[var(--dark-purple)] text-lg">${escapeHtml(comp.title)}</h3>
+                    </div>`;
+                }
+
+                if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
+                    const block = state.dataBlocksCatalogue[comp.id];
+                    const blockTitle = comp.titleOverride || block.title;
+                    
+                    const itemsHtml = block.items.map(itemId => {
+                        const dataItem = state.dataItemsCatalogue[itemId];
+                        if (!dataItem) return '';
+
+                        return generateDataItemInput(itemId, dataItem);
+                    }).join('');
+
+                    return `
+                        <div class="bg-white rounded-xl p-4 border border-gray-200">
+                            <h4 class="font-bold text-[var(--eon-red)] mb-4">${escapeHtml(blockTitle)}</h4>
+                            <div class="grid gap-4">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (comp.type === 'item') {
+                    const dataItem = state.dataItemsCatalogue[comp.id];
+                    if (!dataItem) return '';
+
+                    return `
+                        <div class="bg-white rounded-xl p-4 border border-gray-200">
+                            ${generateDataItemInput(comp.id, dataItem)}
+                        </div>
+                    `;
+                }
+
+                return '';
+            }).join('');
+        }
+
+        function generateDataItemInput(itemId, dataItem) {
+            const isRequired = dataItem.cmo === 'M';
+            const hasPopulationNotes = dataItem.populationNotes && dataItem.populationNotes.trim() !== '';
+            
+            // Parse population notes to extract options
+            const options = hasPopulationNotes ? parsePopulationNotes(dataItem.populationNotes) : [];
+            
+            const labelClass = isRequired ? 'text-red-700 font-semibold' : 'text-[var(--purple)] font-medium';
+            const requiredIndicator = isRequired ? ' <span class="text-red-500">*</span>' : '';
+            
+            let inputHtml = '';
+            let validationHtml = '';
+            
+            // Determine input type based on data item characteristics
+            const inputType = determineInputType(dataItem);
+            
+            if (options.length > 0) {
+                // Create dropdown for enumerated values
+                const optionsHtml = options.map(option =>
+                    `<option value="${escapeHtml(option.value)}" title="${escapeHtml(option.label)}">${escapeHtml(option.label)}</option>`
+                ).join('');
+                
+                inputHtml = `
+                    <select class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent"
+                            data-item-id="${itemId}"
+                            data-input-type="enum"
+                            ${isRequired ? 'required' : ''}>
+                        <option value="">Select an option...</option>
+                        ${optionsHtml}
+                    </select>
+                `;
+            } else {
+                // Create appropriate input based on data type
+                const placeholder = dataItem.example ? `e.g., ${dataItem.example}` : getPlaceholderByType(inputType);
+                
+                switch (inputType) {
+                    case 'date':
+                        inputHtml = `
+                            <input type="date"
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent"
+                                   data-item-id="${itemId}"
+                                   data-input-type="date"
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                        break;
+                        
+                    case 'datetime':
+                        inputHtml = `
+                            <input type="datetime-local"
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent"
+                                   data-item-id="${itemId}"
+                                   data-input-type="datetime"
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                        break;
+                        
+                    case 'number':
+                        inputHtml = `
+                            <input type="number"
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent"
+                                   placeholder="${escapeHtml(placeholder)}"
+                                   data-item-id="${itemId}"
+                                   data-input-type="number"
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                        break;
+                        
+                    case 'email':
+                        inputHtml = `
+                            <input type="email"
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent"
+                                   placeholder="${escapeHtml(placeholder)}"
+                                   data-item-id="${itemId}"
+                                   data-input-type="email"
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                        break;
+                        
+                    case 'textarea':
+                        inputHtml = `
+                            <textarea class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent"
+                                      rows="3"
+                                      placeholder="${escapeHtml(placeholder)}"
+                                      data-item-id="${itemId}"
+                                      data-input-type="textarea"
+                                      ${isRequired ? 'required' : ''}></textarea>
+                        `;
+                        break;
+                        
+                    default: // text
+                        const maxLength = getMaxLength(dataItem);
+                        inputHtml = `
+                            <input type="text"
+                                   class="form-input w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--eon-red)] focus:border-transparent"
+                                   placeholder="${escapeHtml(placeholder)}"
+                                   data-item-id="${itemId}"
+                                   data-input-type="text"
+                                   ${maxLength ? `maxlength="${maxLength}"` : ''}
+                                   ${isRequired ? 'required' : ''}>
+                        `;
+                }
+            }
+
+            // Add validation hints
+            if (dataItem.rule && dataItem.rule.length > 50) {
+                validationHtml = `
+                    <details class="mt-1">
+                        <summary class="text-xs text-blue-600 cursor-pointer hover:text-blue-800">Validation Rules</summary>
+                        <p class="text-xs text-gray-600 mt-1 p-2 bg-blue-50 rounded">${escapeHtml(dataItem.rule)}</p>
+                    </details>
+                `;
+            } else if (dataItem.rule) {
+                validationHtml = `<p class="text-xs text-gray-600 mt-1">${escapeHtml(dataItem.rule)}</p>`;
+            }
+
+            return `
+                <div class="form-group">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-16">
+                            <code class="text-xs font-mono font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">${escapeHtml(itemId)}</code>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm ${labelClass} mb-1">
+                                ${escapeHtml(dataItem.name)}${requiredIndicator}
+                                <span class="text-xs font-normal text-gray-600 ml-2">(${escapeHtml(dataItem.cmo)})</span>
+                            </label>
+                            ${inputHtml}
+                            ${validationHtml}
+                            <div class="validation-error text-xs text-red-600 mt-1 hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function determineInputType(dataItem) {
+            const name = dataItem.name.toLowerCase();
+            const rule = (dataItem.rule || '').toLowerCase();
+            
+            // Date/DateTime detection
+            if (name.includes('date') || name.includes('time') || rule.includes('date') || rule.includes('time')) {
+                if (name.includes('time') || rule.includes('time')) {
+                    return 'datetime';
+                }
+                return 'date';
+            }
+            
+            // Number detection
+            if (name.includes('count') || name.includes('number') || name.includes('amount') ||
+                name.includes('quantity') || rule.includes('numeric') || dataItem.example && /^\d+(\.\d+)?$/.test(dataItem.example)) {
+                return 'number';
+            }
+            
+            // Email detection
+            if (name.includes('email') || name.includes('contact') && rule.includes('email')) {
+                return 'email';
+            }
+            
+            // Long text detection
+            if (rule && rule.length > 100 || name.includes('description') || name.includes('context') || name.includes('additional information')) {
+                return 'textarea';
+            }
+            
+            return 'text';
+        }
+
+        function getMaxLength(dataItem) {
+            if (dataItem.rule && dataItem.rule.includes('40')) return 40;
+            if (dataItem.rule && dataItem.rule.includes('13')) return 13;
+            if (dataItem.rule && dataItem.rule.includes('255')) return 255;
+            
+            // Extract numbers from rule text
+            const match = dataItem.rule?.match(/(\d+)\s*(character|char)/i);
+            if (match) return parseInt(match[1]);
+            
+            return null;
+        }
+
+        function getPlaceholderByType(inputType) {
+            switch (inputType) {
+                case 'date': return 'YYYY-MM-DD';
+                case 'datetime': return 'YYYY-MM-DDTHH:mm';
+                case 'number': return 'Enter number...';
+                case 'email': return 'user@example.com';
+                case 'textarea': return 'Enter detailed information...';
+                default: return 'Enter value...';
+            }
+        }
+
+        function parsePopulationNotes(notes) {
+            const options = [];
+            
+            if (!notes) return options;
+            
+            // Enhanced pattern matching for Excel enum formats
+            
+            // Format 1: "- W  Whole Current\n- L  LV with CT\n- H  HV with CT"
+            let matches = notes.match(/- ([A-Z0-9_]+)\s+([^\n-]+)/g);
+            
+            if (matches) {
+                matches.forEach(match => {
+                    const cleaned = match.replace(/^- /, '').trim();
+                    const firstSpaceIndex = cleaned.indexOf('  '); // Look for double spaces
+                    if (firstSpaceIndex > 0) {
+                        const code = cleaned.substring(0, firstSpaceIndex).trim();
+                        const description = cleaned.substring(firstSpaceIndex).trim();
+                        options.push({
+                            value: code,
+                            label: `${code} - ${description}`
+                        });
+                    } else {
+                        // Fallback to single space
+                        const singleSpaceIndex = cleaned.indexOf(' ');
+                        if (singleSpaceIndex > 0) {
+                            const code = cleaned.substring(0, singleSpaceIndex).trim();
+                            const description = cleaned.substring(singleSpaceIndex + 1).trim();
+                            options.push({
+                                value: code,
+                                label: `${code} - ${description}`
+                            });
+                        }
+                    }
+                });
+            } else {
+                // Format 2: "_A, _B, _C, _D, _E" (comma-separated)
+                if (notes.includes('_') && notes.includes(',')) {
+                    const parts = notes.split(',').map(s => s.trim());
+                    parts.forEach(part => {
+                        if (part.startsWith('_') && part.length >= 2) {
+                            options.push({
+                                value: part,
+                                label: part
+                            });
+                        }
+                    });
+                } else {
+                    // Format 3: "1=Opt Out\n2=Missing" or "C = Created\nO = Operational"
+                    matches = notes.match(/([A-Z0-9_]+)\s*=\s*([^\n]+)/g);
+                    
+                    if (matches) {
+                        matches.forEach(match => {
+                            const parts = match.split(/\s*=\s*/);
+                            if (parts.length >= 2) {
+                                const code = parts[0].trim();
+                                const description = parts[1].trim();
+                                options.push({
+                                    value: code,
+                                    label: `${code} - ${description}`
+                                });
+                            }
+                        });
+                    } else {
+                        // Format 4: Complex multi-line with various separators
+                        // Split by newlines and try to parse each line
+                        const lines = notes.split(/[\n\r]+/).filter(line => line.trim() !== '');
+                        
+                        lines.forEach(line => {
+                            // Try different patterns for each line
+                            if (line.includes('=')) {
+                                const parts = line.split(/\s*=\s*/);
+                                if (parts.length >= 2 && parts[0].trim().match(/^[A-Z0-9_]+$/)) {
+                                    const code = parts[0].trim();
+                                    const description = parts.slice(1).join('=').trim();
+                                    options.push({
+                                        value: code,
+                                        label: `${code} - ${description}`
+                                    });
+                                }
+                            } else if (line.match(/^[A-Z0-9_]+\s+\w+/)) {
+                                // Pattern like "A1 Description" or "ZE1 Zero Estimation"
+                                const match = line.match(/^([A-Z0-9_]+)\s+(.+)$/);
+                                if (match) {
+                                    const code = match[1].trim();
+                                    const description = match[2].trim();
+                                    options.push({
+                                        value: code,
+                                        label: `${code} - ${description}`
+                                    });
+                                }
+                            }
+                        });
+                        
+                        // If still no options, try comma-separated simple format
+                        if (options.length === 0 && notes.includes(',')) {
+                            const parts = notes.split(',').map(s => s.trim());
+                            parts.forEach(part => {
+                                if (part.match(/^[A-Z0-9_]+$/)) {
+                                    options.push({
+                                        value: part,
+                                        label: part
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Remove duplicates and sort by code
+            const uniqueOptions = options.filter((option, index, self) =>
+                index === self.findIndex(o => o.value === option.value)
+            ).sort((a, b) => {
+                // Sort numerically if both are numbers, otherwise alphabetically
+                const aNum = parseInt(a.value);
+                const bNum = parseInt(b.value);
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return aNum - bNum;
+                }
+                return a.value.localeCompare(b.value);
+            });
+            
+            return uniqueOptions;
+        }
+
+        function exportFormData() {
+            // Validate required fields first
+            const validationErrors = validateForm();
+            
+            if (validationErrors.length > 0) {
+                showValidationErrors(validationErrors);
+                return;
+            }
+
+            const currentInterface = state.interfaces.find(i => i.id === state.currentInterfaceId);
+            
+            const formData = {
+                interfaceId: state.currentInterfaceId,
+                interfaceName: currentInterface?.name || '',
+                timestamp: new Date().toISOString(),
+                metadata: {
+                    sender: {
+                        name: DOMElements.senderName.value.trim(),
+                        contact: DOMElements.senderContact.value.trim()
+                    },
+                    receiver: {
+                        name: DOMElements.receiverName.value.trim(),
+                        contact: DOMElements.receiverContact.value.trim()
+                    }
+                },
+                dataItems: {},
+                dataBlocks: {}
+            };
+
+            // Collect all form inputs, ensuring only code values are saved for enums
+            const inputs = DOMElements.formContent.querySelectorAll('.form-input[data-item-id]');
+            
+            inputs.forEach(input => {
+                const itemId = input.dataset.itemId;
+                const inputType = input.dataset.inputType;
+                const value = input.value.trim();
+                
+                if (value) {
+                    const dataItem = state.dataItemsCatalogue[itemId];
+                    
+                    // For enum types, save only the code value, not the full description
+                    let savedValue = value;
+                    if (inputType === 'enum') {
+                        // Extract just the code part (before the first " - " if present)
+                        const dashIndex = value.indexOf(' - ');
+                        if (dashIndex > 0) {
+                            savedValue = value.substring(0, dashIndex).trim();
+                        }
+                    }
+                    
+                    formData.dataItems[itemId] = {
+                        name: dataItem?.name || '',
+                        value: savedValue,
+                        displayValue: value, // Keep full display value for reference
+                        inputType: inputType,
+                        mandatory: dataItem?.cmo === 'M',
+                        rule: dataItem?.rule || ''
+                    };
+                }
+            });
+
+            // Group data items by their blocks for better structure
+            if (currentInterface?.composition) {
+                currentInterface.composition.forEach(comp => {
+                    if (comp.type === 'block' && state.dataBlocksCatalogue[comp.id]) {
+                        const block = state.dataBlocksCatalogue[comp.id];
+                        const blockData = {};
+                        
+                        block.items.forEach(itemId => {
+                            if (formData.dataItems[itemId]) {
+                                blockData[itemId] = formData.dataItems[itemId];
+                            }
+                        });
+                        
+                        if (Object.keys(blockData).length > 0) {
+                            formData.dataBlocks[comp.id] = {
+                                title: comp.titleOverride || block.title,
+                                items: blockData
+                            };
+                        }
+                    }
+                });
+            }
+
+            // Generate filename with timestamp
+            const timestamp = new Date().toISOString().slice(0, 16).replace(/[:.]/g, '-');
+            const filename = `${state.currentInterfaceId}_filled_${timestamp}.json`;
+            
+            // Download the filled form data
+            downloadFile(
+                JSON.stringify(formData, null, 2),
+                filename,
+                'application/json'
+            );
+            
+            // Show success message
+            showSuccessMessage(`Form data exported successfully as ${filename}`);
+        }
+
+        function validateForm() {
+            const errors = [];
+            const requiredInputs = DOMElements.formContent.querySelectorAll('.form-input[required]');
+            
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    const itemId = input.dataset.itemId;
+                    const dataItem = state.dataItemsCatalogue[itemId];
+                    errors.push({
+                        field: itemId,
+                        message: `${dataItem?.name || itemId} is required`,
+                        element: input
+                    });
+                }
+            });
+            
+            return errors;
+        }
+
+        function showValidationErrors(errors) {
+            // Clear previous errors
+            DOMElements.formContent.querySelectorAll('.validation-error').forEach(el => {
+                el.classList.add('hidden');
+                el.textContent = '';
+            });
+            
+            // Show new errors
+            errors.forEach(error => {
+                const formGroup = error.element.closest('.form-group');
+                if (formGroup) {
+                    const errorDiv = formGroup.querySelector('.validation-error');
+                    if (errorDiv) {
+                        errorDiv.textContent = error.message;
+                        errorDiv.classList.remove('hidden');
+                    }
+                    
+                    // Highlight the input
+                    error.element.classList.add('border-red-500', 'focus:ring-red-500');
+                    setTimeout(() => {
+                        error.element.classList.remove('border-red-500', 'focus:ring-red-500');
+                    }, 3000);
+                }
+            });
+            
+            // Scroll to first error
+            if (errors.length > 0) {
+                errors[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                errors[0].element.focus();
+            }
+        }
+
+        function showSuccessMessage(message) {
+            // Create and show a temporary success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-0 transition-transform';
+            successDiv.textContent = message;
+            
+            document.body.appendChild(successDiv);
+            
+            // Animate in
+            setTimeout(() => {
+                successDiv.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                successDiv.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(successDiv)) {
+                        document.body.removeChild(successDiv);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Export Functions (keeping the others for completeness)
+        function exportData(format) {
+            let data, filename, mimeType;
             
             switch (format) {
-                case 'csv':
-                    let csvContent = headers.join(',') + '\\n';
-                    state.filteredInterfaces.forEach(item => {
-                        const row = headers.map(header => `"${(item[header] || '').toString().replace(/"/g, '""')}"`);
-                        csvContent += row.join(',') + '\\n';
-                    });
-                    data = csvContent;
-                    filename = 'mhhs_data.csv';
-                    mimeType = 'text/csv;charset=utf-8;';
-                    break;
-                    
                 case 'json':
                     data = JSON.stringify({
-                        meta: {
-                            exportedAt: new Date().toISOString(),
-                            filter: state.currentFilter,
+                        interfaces: state.interfaces,
+                        dataItems: state.dataItemsCatalogue,
+                        dataBlocks: state.dataBlocksCatalogue,
+                        rejectionCodes: state.rejectionCodesCatalogue
+                    }, null, 2);
+                    filename = 'mhhs_interfaces_complete.json';
+                    mimeType = 'application/json';
+                    break;
+                    
+                case 'csv':
+                    const csvHeaders = ['ID', 'Name', 'Description', 'Sender', 'Receiver', 'Context', 'Supplier Type'];
+                    const csvRows = state.interfaces.map(item => [
+                        `"${item.id}"`,
+                        `"${item.name}"`,
+                        `"${item.description || ''}"`,
+                        `"${item.sender || ''}"`,
+                        `"${item.receiver || ''}"`,
+                        `"${item.context || ''}"`,
+                        `"${item.supplier_type || ''}"`
+                    ]);
+                    data = [csvHeaders, ...csvRows].map(row => row.join(',')).join('\n');
+                    filename = 'mhhs_interfaces.csv';
+                    mimeType = 'text/csv';
+                    break;
+                    
+                case 'filtered':
+                    data = JSON.stringify({
+                        filters: {
+                            currentFilter: state.currentFilter,
                             searchTerm: state.currentSearchTerm,
                             advancedFilters: state.advancedFilters
                         },
@@ -282,21 +1619,12 @@
         // Utility Functions
         function escapeHtml(text) {
             if (text === null || typeof text === 'undefined') return '';
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#039;' };
-            return text.toString().replace(/[&<>\"']/g, m => map[m]);
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.toString().replace(/[&<>"']/g, m => map[m]);
         }
 
         // Global functions for HTML onclick handlers
         window.toggleFavorite = toggleFavorite;
-        window.showDetails = showDetails;
-        window.closeModal = closeModal;
-        window.openModal = openModal;
-        window.exportData = exportData;
-
     </script>
-    
-    <!-- This new script tag links to your external form builder logic -->
-    <script src="formBuilder.js"></script>
-
 </body>
 </html>
